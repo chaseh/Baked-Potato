@@ -1,0 +1,11 @@
+
+
+.box {
+	position:absolute;
+	border: 1px dotted black;
+	background-color: transparent;
+	resize: none;
+	overflow:hidden;
+	height: auto;
+	width: auto;
+}
