@@ -1,11 +1,19 @@
-
-
-.box {
+.note {
 	position:absolute;
-	border: 1px dotted black;
+	border: 0px solid transparent;
 	background-color: transparent;
 	resize: none;
 	overflow:hidden;
 	height: auto;
 	width: auto;
+
+}
+
+.note:focus {
+	#background-color: #cceeff;
+}
+
+input[type=text]:focus,
+input[type=password]:focus, textarea:focus {
+  outline: 0 none;
 }

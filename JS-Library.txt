@@ -1,0 +1,40 @@
+JS library needs:
+
+-- new DOM element, the `Pen mark' (really a svg drawing)
+  -- 9 times of Pen marks -- 4 lines, closed path
+
+-- new DOM element -- 'super text' (can be a link)
+
+These two elements need:
+-- drag/drop 
+-- arbitrary click to add
+
+4 mouse events:
+click, click and drag, double click, double click and drag
+
+Need to record pen marks as they are made, classify them, and smooth them
+
+-------------------------------------------------------------------------------------------------------
+
+Need to handle positioning of elements elements smartly:
+  isAbove: check if the element is above this element (within a specified range)
+  isBelow: check if the element is below this element (within a specified range)
+  isLeft: check if the element is to the left of this element (within a specified range)
+  isRight: check if the element is the left of this element (within a specified range)
+  isInside: check if the element is inside this element
+  isSurrounding: check if the element (partially) surrounds this element
+  split: split this element according that element (for closed path this is equivalent to a partitioning, for lines this is equivalent to splitting the element into where the line is, and where the line isn't) 
+  whereBelow: return the range of pixels where the element is below
+  whereAbove: return the range of pixels where the element is above
+  whereRight: return the range of pixels where the element is to the right
+  whereLeft: return the range of pixels where the element is to the left
+  whereInside: return the range of pixels where the element is inside
+  whereSurrounding: return the range of pixels where the element (partially) surrounds this element
+---------------------------------------------------------------------------------------------------------
+
+1) make the double click vs single click smarter
+2) make double-drag-and-drop
+3) make single-drag-and-pen
+
+
+
