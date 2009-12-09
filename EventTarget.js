@@ -13,10 +13,12 @@ EventTarget.prototype = {
     },
     
     fire: function(event) {
-      var handlers = this.handlers[event.type];
-      for (var i = handlers.length - 1; i >= 0; i--){
-        handlers[i](event);
-      }           
+        if (this.handlers[event.type] instanceof Array){
+            var handlers = this.handlers[event.type];
+            for (var i=0, len=handlers.length; i < len; i++){
+                handlers[i](event);
+            }
+        }            
     },
 
     removeHandler: function(type, handler){

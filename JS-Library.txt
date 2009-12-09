@@ -38,3 +38,18 @@ Need to handle positioning of elements elements smartly:
 
 
 
+i want:
+
+text-expand-left  (right justify)
+text-expand-right (left justify)
+text-expaned-both (center justify)
+bold
+italic
+underline
+fonts
+text-color
+span-color
+
+
+
+

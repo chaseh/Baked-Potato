@@ -3,7 +3,7 @@
         dragging = null, timeout = null,
         startX = 0, startY = 0,
         diffX = 0, diffY = 0,
-        clickCount = 0, hasDragged = false, 
+        clickCount = 0, hasDragged = false,
         eventName = [
             "drag", "dbldrag", 
             "dragstart", "dbldragstart", 
@@ -23,10 +23,9 @@
               if(hasDragged === true) { //are we in the middle of a drag? if so fire a drag
                 dragdrop.fire({type:eventName[clickCount], target: dragging, //drag
                 clientX: event.clientX, clientY: event.clientY, diffX: diffX, diffY: diffY});
-              //if this is the start of a drag fire a `dragstart'
-              } else if (hasDragged === false && (startX != event.clientX || startY != event.clientY)) { 
-                  //if the (x,y) coords have changed since mousedown then this is a drag
-                dragdrop.fire({type: eventName[2 + clickCount], target: dragging,  //dragstart
+              } else if (startX != event.clientX || startY != event.clientY) { 
+                  //if the (x,y) coords have changed since mousedown then this is a drag start
+                dragdrop.fire({type: eventName[2 + clickCount], target: dragging,
                 clientX: event.clientX, clientY: event.clientY, diffX: diffX, diffY: diffY});
                 hasDragged = true;
               } 
@@ -36,20 +35,19 @@
           case "mousedown" : //mouse down
             if (target.className.indexOf("draggable") > -1) {
               if (timeout !== null) { 
-                //check if a timer is waiting to be executed 
-                //(if so then this is a double click)
+                // if a timer is waiting to be executed then double click
                 clearTimeout(timeout); 
                 timeout = null;
                 clickCount = 1;
               } else {
-                clickCount = 0;
-              }
-              dragging = target;             
-              startX = event.clientX;
-              startY = event.clientY;
-              diffX = startX - target.offsetLeft;
-              diffY = startY - target.offsetTop;
-              hasDragged = false;
+              	dragging = target;             
+              	startX = event.clientX;
+              	startY = event.clientY;
+              	diffX = startX - target.offsetLeft;
+              	diffY = startY - target.offsetTop;
+              	hasDragged = false;
+              	clickCount = 0;
+              } 
             }
             break;
             
@@ -57,18 +55,15 @@
             if(dragging !== null) {
               if(hasDragged === true) { // was this a drag? if so fire a dragend
                 dragdrop.fire({type: eventName[4 + clickCount], target: target, //dragend
-                clientX: event.clientX, clientY: event.clientY, diffX: diffX, diffY: diffY});
+                clientX: event.clientX, clientY: event.clientY, diffX: diffX, diffY: diffY}); 
                 timeout = null;
                 dragging = null;
-              } else if(hasDragged === false && (startX == event.clientX && startY == event.clientY)) { 
+              } else { 
                   //else it must have been a click. so fire a click
                 timeout = 
                     setTimeout(function() { timeout = null; dragging = null;}, 250); 
                     //quarter of a second to detect single vs. dbl click
-              } else {
-                timeout = null;
-                dragging = null;
-              }
+              } 
             }
             break;
             

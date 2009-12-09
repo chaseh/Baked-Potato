@@ -4,9 +4,6 @@
 	background-color: transparent;
 	resize: none;
 	overflow:hidden;
-	height: auto;
-	width: auto;
-
 }
 
 .note:focus {
@@ -16,4 +13,9 @@
 input[type=text]:focus,
 input[type=password]:focus, textarea:focus {
   outline: 0 none;
+}
+
+canvas { 
+	position:absolute;
+	background-color: transparent;
 }
