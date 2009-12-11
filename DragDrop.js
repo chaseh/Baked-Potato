@@ -9,7 +9,7 @@
             "dragstart", "dbldragstart", 
             "dragend", "dbldragend",  
             "click", "dblclick"]; //names of different events
-      
+	
       function handleEvent(event) {
       
         //get event and target
@@ -47,7 +47,7 @@
               	diffY = startY - target.offsetTop;
               	hasDragged = false;
               	clickCount = 0;
-              } 
+              }
             }
             break;
             

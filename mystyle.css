@@ -4,6 +4,7 @@
 	background-color: transparent;
 	resize: none;
 	overflow:hidden;
+	font-family: times;
 }
 
 .note:focus {
@@ -18,4 +19,11 @@ input[type=password]:focus, textarea:focus {
 canvas { 
 	position:absolute;
 	background-color: transparent;
+}
+
+::selection {
+	background: #000000; /* Safari */
+	}
+::-moz-selection {
+	background: #000000; /* Firefox */
 }
