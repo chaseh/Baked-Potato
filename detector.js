@@ -4,43 +4,11 @@
       oldX, oldY, curX, curY,
       startTime,
       canvas, ctx, elements = new Array(), predictor =[0,0,0], guess = [0, 0, 0];
-  const MAX_VALUE = 100000;
 
   var sign = function(val) {
     return (val < 0 ? -1 : (val > 0 ? 1 : 0));
   }
  
-  var mapReduce = function(val, mapper, reducer) {
-    for(var i = 0, len = val.lenght; i < len; i++) {
-      val[i] = mapper(val[i]);
-    }
-    return reducer(val);
-  }
-
-  var avg = function(val) {
-    var ans = 0;
-    for(var i = 0, len = val.length; i < len; i++) {
-      ans += val[i];
-    }
-    return ans / len;
-  }
-
-  var max = function(val) {
-    var ans = 0;
-    for(var i = 0, len = val.length; i < len; i++) {
-      ans = (val[i] > ans? val[i] : ans);
-    }
-    return ans;
-  }
-  
-  var min = function(val) {
-    var ans = MAX_VALUE;
-    for(var i = 0, len = val.length; i < len; i++) {
-      ans = (val[i] < ans? val[i] : ans);
-    }
-    return ans;
-  }
-  
   DragDrop.enable();
   
   var draggerStart = function(event) {
