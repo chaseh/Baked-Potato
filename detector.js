@@ -3,7 +3,10 @@
       varSq, sqVar,
       oldX, oldY, curX, curY,
       startTime,
-      canvas, ctx, elements = new Array(), predictor =[0,0,0], guess = [0, 0, 0];
+      canvas, ctx, 
+      elements = new Array(), 
+      predictor=[0,0,0], 
+      example = [0, 0, 0];
 
   var sign = function(val) {
     return (val < 0 ? -1 : (val > 0 ? 1 : 0));
@@ -26,8 +29,6 @@
         ctx.shadowColor = 'rgba(90, 90, 90, 0.7)';
         ctx.lineCap = "round";
         ctx.lineWidth = "4";
-        ctx.beginPath();
-        ctx.moveTo(curX, curY);
         break;
       }
   }
@@ -46,8 +47,7 @@
         var val = sign(rat1) * Math.min(Math.abs(rat1), Math.abs(rat2));
         varsq += val;
         sqvar += val * val;
-        ctx.lineTo(curX, curY);
-        ctx.stroke();
+        CanvasUtil.strokeLine(ctx, oldX, oldY, curX, curY);
         break;
     }
   }
@@ -59,57 +59,71 @@
         oldX = curX; oldY = curY;
         curX = event.clientX; curY = event.clientY;
         coordsX.push(curX); coordsY.push(curY);
-        varsq /= coordsX.length;
-        varsq = varsq * varsq;
+        CanvasUtil.strokeLine(ctx, oldX, oldY, curX, curY);
+        varsq /= coordsX.length; varsq = varsq * varsq;
         sqvar /= coordsX.length;
-        guess[0] = sqvar - varsq, guess[1] = new Date().getTime() - startTime, guess[2] = coordsX.length;
-        ctx.closePath();
-        ctx.clearRect(0,0, canvas.width, canvas.height);
-        if(predictor[0] * guess[0] + predictor[1] * guess[1] + predictor[2] * guess[2]> 0) { //guess that this is a line
-          elements.push([coordsX[0], coordsY[0], curX, curY]);
-        } else {
-          var x = avg(coordsX), y = avg(coordsY), rad = 0;
-          for(var i = 0, len = coordsX.length; i < len; i++) {
-            rad += Math.sqrt((x - coordsX[i]) * (x - coordsX[i]) 
-            			   + (y - coordsY[i]) * (y - coordsY[i]));
-          }
-          rad /= len;
-          elements.push([x, y, rad]);
+        example[0] = sqvar - varsq;
+        example[1] = new Date().getTime() - startTime;
+        example[2] = coordsX.length;
+        CanvasUtil.clearCanvas(ctx, canvas);
+        
+        var ans = 0;
+        for(var i = 0, len = predictor.length; i < len; i++) {
+          ans += predictor[i] * example[i];
         }
-        ctx.beginPath();
+        
+        if(ans > 0) { //guess that this is a line
+          elements.push({type:"line", startX:coordsX[0], startY:coordsY[0], 
+                                      endX:curX, endY:curY});
+        } else { //guess that this is an ellipse
+          //convert point set into an ellipse
+          var x = MathUtil.avg(coordsX), //x center
+              y = MathUtil.avg(coordsY), //y center
+              distX = 0, distY = 0;
+          for(var i = 0, len = coordsX.length; i < len; i++) {
+            distX += Math.abs(x - coordsX[i]); 
+            distY += Math.abs(y - coordsY[i]);
+          }
+          distX = distX / len; //x average distance -- this is sloppy
+          distY = distY / len; //y average distance -- this is sloppy
+          elements.push({type:"ellipse", left:x - distX, top:y - distY, 
+                                        width:2 * distX, height:2 * distY});
+        }
+        
+        //draw the elements
         for(var i = 0, len = elements.length; i < len; i++) {
           var cur = elements[i];
-          if(cur.length == 3) {
-            ctx.moveTo(cur[0] + cur[2], cur[1]);
-            ctx.arc(cur[0], cur[1], cur[2], 0, 2 * Math.PI, true);
-          } else if(cur.length == 4) {
-            ctx.moveTo(cur[0], cur[1]);
-            ctx.lineTo(cur[2], cur[3]);
+          switch(cur.type) {
+            case "line" :
+              CanvasUtil.strokeLine(ctx, cur.startX, cur.startY, cur.endX, cur.endY);
+              break;
+            case "ellipse" :
+              CanvasUtil.strokeEllipse(ctx, cur.left, cur.top, cur.width, cur.height);
+              break;
           }
         }
-        ctx.stroke();
-        ctx.closePath();
-        var error = document.getElementById("error");
-        //error.style.visibility = "visible";
-        //setTimeout(function() { error.style.visibility = "hidden"}, 1000);
         break;
     }
   }
  
  
-var click = function(event) {
+var click = function(event) { 
+  //need to use special click handler so events don't fire during drag
   var target = event.target;
   switch(target.id) {
     case "error" :
-      var corrector = (predictor[0] * guess[0] + predictor[1] * guess[1] + predictor[2] * guess[2]> 0 ? -1 : 1);
-      predictor[0] = predictor[0] + corrector * guess[0];
-      predictor[1] = predictor[1] + corrector * guess[1];
-      predictor[2] = predictor[2] + corrector * guess[2];
-      alert(predictor[0] + " " + predictor[1] + " " + predictor[2]);
+      var ans = 0;
+      for(var i = 0, len = predictor.length; i < len; i++) {
+        ans += predictor[i] * example[i];
+      }
+      var sgn = ans > 0 ? -1 : 1;
+      predictor = MathUtil.mapReduce(predictor, 
+        function(val, i) { return val + sgn * example[i];}, null);
+        //update the solution
       break;
     case "clear" : 
       elements = new Array();
-      ctx.clearRect(0,0, canvas.width, canvas.height);
+      CanvasUtil.clearCanvas(ctx, canvas);
       break;
   }
 }
@@ -118,5 +132,4 @@ var click = function(event) {
   DragDrop.addHandler("drag", dragger);
   DragDrop.addHandler("dragend", draggerEnd);
   DragDrop.addHandler("click", click);
-  DragDrop.addHandler("dblclick", click);
 })();
