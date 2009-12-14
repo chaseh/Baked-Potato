@@ -128,27 +128,27 @@
     }
   }
  
- 
-var click = function(event) {
-  var target = event.target;
-  switch(target.id) {
-    case "error" :
+  window.onload = function() {
+    //TODO: all of the onload stuff should be hooked up elsewhere.
+    //Hook up the button handlers.  These need to be created, so we'll wait until the window is loaded to hook them up.
+    document.getElementById('error').onclick = function(event) {
       var corrector = (predictor[0] * guess[0] + predictor[1] * guess[1] + predictor[2] * guess[2]> 0 ? -1 : 1);
       predictor[0] = predictor[0] + corrector * guess[0];
       predictor[1] = predictor[1] + corrector * guess[1];
       predictor[2] = predictor[2] + corrector * guess[2];
       alert(predictor[0] + " " + predictor[1] + " " + predictor[2]);
       break;
-    case "clear" : 
+    }
+  
+    document.getElementById('clear').onclick = function(event) {
       elements = new Array();
       ctx.clearRect(0,0, canvas.width, canvas.height);
       break;
+    }
+    
   }
-}
-
+  
   DragDrop.addHandler("dragstart", draggerStart);
   DragDrop.addHandler("drag", dragger);
   DragDrop.addHandler("dragend", draggerEnd);
-  DragDrop.addHandler("click", click);
-  DragDrop.addHandler("dblclick", click);
 })();
