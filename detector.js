@@ -122,8 +122,8 @@
         ctx.stroke();
         ctx.closePath();
         var error = document.getElementById("error");
-        error.style.visibility = "visible";
-        setTimeout(function() { error.style.visibility = "hidden"}, 1000);
+        //error.style.visibility = "visible";
+        //setTimeout(function() { error.style.visibility = "hidden"}, 1000);
         break;
     }
   }

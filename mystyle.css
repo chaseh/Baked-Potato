@@ -28,7 +28,6 @@ canvas {
 	background-color: yellow; 
 	width: 100px; 
 	height: 50px; 
-	visibility:hidden;
 	border: 1px dotted black;
 }
 
