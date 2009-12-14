@@ -5,9 +5,7 @@
       startTime,
       canvas, ctx, 
       elements = new Array(), 
-      predictor=[0,0,0], 
-      example = [0, 0, 0];
-
+      predictor = new Banditron(.25, 3,2);
   var sign = function(val) {
     return (val < 0 ? -1 : (val > 0 ? 1 : 0));
   }
@@ -40,11 +38,11 @@
         oldX = curX; oldY = curY;
         curX = event.clientX; curY = event.clientY;
         coordsX.push(curX); coordsY.push(curY);
-        var diffX = curX - oldX, 
+        var diffX = curX - oldX,
             diffY = curY - oldY;
-        var rat1 = diffX / diffY,
-            rat2 = diffY / diffX;
-        var val = sign(rat1) * Math.min(Math.abs(rat1), Math.abs(rat2));
+        diffX = (Math.abs(diffX) < 1 ? (diffX < 0 ? -1 : 1): diffX); //purturb slightly for stability
+        var val = diffY / diffX;
+        
         varsq += val;
         sqvar += val * val;
         CanvasUtil.strokeLine(ctx, oldX, oldY, curX, curY);
@@ -62,17 +60,14 @@
         CanvasUtil.strokeLine(ctx, oldX, oldY, curX, curY);
         varsq /= coordsX.length; varsq = varsq * varsq;
         sqvar /= coordsX.length;
-        example[0] = sqvar - varsq;
-        example[1] = new Date().getTime() - startTime;
-        example[2] = coordsX.length;
+        var example = [sqvar - varsq, //get the feature and predict using the learning Algorithm
+                       new Date().getTime() - startTime, 
+                       coordsX.length],
+                       prediction = predictor.predict(example);
+
         CanvasUtil.clearCanvas(ctx, canvas);
         
-        var ans = 0;
-        for(var i = 0, len = predictor.length; i < len; i++) {
-          ans += predictor[i] * example[i];
-        }
-        
-        if(ans > 0) { //guess that this is a line
+        if(prediction == 0) { //guess that this is a line
           elements.push({type:"line", startX:coordsX[0], startY:coordsY[0], 
                                       endX:curX, endY:curY});
         } else { //guess that this is an ellipse
@@ -107,22 +102,7 @@ var click = function(event) {
   var target = event.target;
   switch(target.id) {
     case "error" :
-      var ans = 0;
-      for(var i = 0, len = predictor.length; i < len; i++) {
-        ans += predictor[i] * example[i];
-      }
-      var sgn = ans > 0 ? -1 : 1;
-      predictor = MathUtil.mapReduce(predictor, 
-        function(val, i) { return val + sgn * example[i];}, null);
-        //update the solution
-        alert(MathUtil.mapReduce(predictor, null, function(val) {
-          var ans = "";
-          for(var i = 0, len = val.length; i < len; i++) {
-            ans += val[i] + " ";
-          }
-          return ans;
-        }));
-        
+      predictor.negativeFeedback();
       break;
     case "clear" : 
       elements = new Array();
