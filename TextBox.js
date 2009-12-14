@@ -66,23 +66,20 @@ function getStringPixelWidth(val) {
 }
 
 function TextBox(x, y) {
-	this.width = 0; 
-	this.rows = 0;
-	this.div = document.createElement("textarea");
-	this.div.wrap = "hard";
-	this.div.cols = 1;
-	this.div.rows = 1;
+//	this.width = 0; this.height = 0;
+	this.div = document.createElement("div");
 	this.div.className = "note draggable";
-	this.div.style.left = x + "px";
-	this.div.style.top  = y + "px";
 	this.div.id = new Date().getTime();
-	this.avgCharWidth; //initialized l8r
+	this.setLocation(x,y);
+	//this.setDimensions(this.width,this.height);
+	this.setDefaultCursor();
+	this.div.appendChild(document.createTextNode(''));
 };
 
 TextBox.prototype = {
 	constructor: TextBox,
 	isEmpty : function() {
-		return this.div.value.length == 0;
+		return this.div.firstChild.value == '';
 	},
 	getHTMLElement : function() {
 		return this.div;	
@@ -92,19 +89,37 @@ TextBox.prototype = {
 	},
 	addToDOM : function() {
 		document.body.appendChild(this.div);
-		this.avgCharWidth = this.div.offsetWidth / 4; //some juju here
 	},
 	cleanUp : function () {
-		document.body.removeChild(this.div);
-		this.div = null;
+		try {
+			document.body.removeChild(this.div);
+			this.div = null;
+		} catch(EX) {}
 	},
 	getHash : function () {
 		return this.div.id;
 	}, 
 	process : function(code, ctrl) { //deals with the wrapping of text as you type
-		var elmn = this.div;
-		this.rows = 1 + countReturns(elmn.value);
-		if(code == 13 || code == 10) {
+		switch (code) {
+			case 10:
+			case 13:
+				if(this.div.children.length <=1) {
+					this.div.style.width = getStringPixelWidth(this.div.firstChild.nodeValue);
+				}		
+				this.div.appendChild(document.createElement("br"));
+				this.div.appendChild(document.createTextNode(''));
+				break;
+			case 8:
+			case 127:
+				this.div.lastChild.replaceData(this.div.lastChild.length - 1, 1,'');
+				break;
+			default:
+				this.div.lastChild.appendData(String.fromCharCode(code));
+				break;
+		}
+		//var elmn = this.div;
+		//this.rows = 1 + countReturns(elmn.value);
+/*		if(code == 13 || code == 10) {
 			if(this.rows == 2) {
 				this.width = getElementPixelWidth(elmn);
 				elmn.cols = Math.ceil(this.width / this.avgCharWidth);
@@ -142,10 +157,13 @@ TextBox.prototype = {
         		    document.selection.createRange().text = newText;
         		}
         	}
-		}
+		}*/
 	}, setLocation: function(x, y) {
 			this.div.style.left = x + "px";
 			this.div.style.top  = y + "px";	
+	}, setDimensions: function(x, y) {
+			this.div.style.width = x + "px";
+			this.div.style.height  = y + "px";	
 	}, setDragCursor: function() {
 		this.div.style.cursor = "default";
 	}, 

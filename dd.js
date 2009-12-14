@@ -7,13 +7,7 @@
 	EventUtil.addHandler(document, "keyup", function(event) {
 		event = EventUtil.getEvent(event);
 		var target = EventUtil.getTarget(event);
-		switch(target.tagName.toLowerCase()) {
-			case "textarea" : 
-				textBoxes[target.id].process(EventUtil.getCharCode(event), event.ctrlKey || event.metaKey);
-				break;
-			default: //need to add other key events here
-				break;
-		}
+		focused.process(EventUtil.getCharCode(event), event.ctrlKey || event.metaKey);
 	});
 
 	DragDrop.enable();       
@@ -24,7 +18,7 @@
 		    focused = null;
 		}
 	    switch(target.tagName.toLowerCase()) {
-	    	case "textarea" :
+	    	case "div" :
 	    		focused = textBoxes[target.id];
 	   	 		break;
 	        case "body" :
@@ -41,7 +35,7 @@
 	var dblDraggerStart = function(event) {
 		var target = event.target;
 	    switch(target.tagName.toLowerCase()) {
-    		case "textarea":
+    		case "div":
     		case "canvas":
     			var textBox = textBoxes[target.id];
     			textBox.setDragCursor();
@@ -75,7 +69,7 @@
 	var dblDragger = function(event) {
 		var target = event.target;
 	    switch(target.tagName.toLowerCase()) {
-    		case "textarea":
+    		case "div":
     		case "canvas":
     			var textBox = textBoxes[target.id];
     			textBox.setLocation(event.clientX - event.diffX, 
@@ -109,7 +103,7 @@
 	var dblDraggerEnd = function(event) {
 		var target = event.target;
 	    switch(target.tagName.toLowerCase()) {
-    		case "textarea":
+    		case "div":
     		case "canvas":
     			var textBox = textBoxes[target.id];
     			textBox.setDefaultCursor();
