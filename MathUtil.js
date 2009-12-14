@@ -19,24 +19,18 @@ var MathUtil = {
         return ans / len;
       });
   },
-  min : function(val) {
-    return this.mapReduce(val, null, 
-      function() { 
-        var ans = this.MAX_VALUE;
-        for(var i = 0, len = val.length; i < len; i++) {
-          ans = (val[i] < ans ? val[i] : ans);
-        }
-        return ans;
-      });
+  min : function(val) { 
+    var ans = this.MAX_VALUE;
+    for(var i = 0, len = val.length; i < len; i++) {
+      ans = (val[i] < ans ? val[i] : ans);
+    }
+    return ans;
   },
   max : function(val) {
-    return this.mapReduce(val, null, 
-      function() { 
-        var ans = this.MIN_VALUE;
-        for(var i = 0, len = val.length; i < len; i++) {
-          ans = (val[i] > ans ? val[i] : ans);
-        }
-        return ans;
-      });
+    var ans = this.MIN_VALUE;
+    for(var i = 0, len = val.length; i < len; i++) {
+      ans = (val[i] > ans ? val[i] : ans);
+    }
+    return ans;
   },
 }

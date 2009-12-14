@@ -76,18 +76,13 @@
           elements.push({type:"line", startX:coordsX[0], startY:coordsY[0], 
                                       endX:curX, endY:curY});
         } else { //guess that this is an ellipse
-          //convert point set into an ellipse
-          var x = MathUtil.avg(coordsX), //x center
-              y = MathUtil.avg(coordsY), //y center
-              distX = 0, distY = 0;
-          for(var i = 0, len = coordsX.length; i < len; i++) {
-            distX += Math.abs(x - coordsX[i]); 
-            distY += Math.abs(y - coordsY[i]);
-          }
-          distX = distX / len; //x average distance -- this is sloppy
-          distY = distY / len; //y average distance -- this is sloppy
-          elements.push({type:"ellipse", left:x - distX, top:y - distY, 
-                                        width:2 * distX, height:2 * distY});
+          //find the min, and max of x and y
+          //compute the width and height and add an ellipse to the elements
+          //only works if assume that ellipses have a vertical dimension
+          //and a horizontal dimension. E.g. this does not render rotated ellipses
+          var x = MathUtil.min(coordsX), y = MathUtil.min(coordsY), 
+              w = MathUtil.max(coordsX) - x, h = MathUtil.max(coordsY) - y;
+          elements.push({type:"ellipse", left:x, top:y, width:w, height:h});               
         }
         
         //draw the elements
@@ -120,6 +115,14 @@ var click = function(event) {
       predictor = MathUtil.mapReduce(predictor, 
         function(val, i) { return val + sgn * example[i];}, null);
         //update the solution
+        alert(MathUtil.mapReduce(predictor, null, function(val) {
+          var ans = "";
+          for(var i = 0, len = val.length; i < len; i++) {
+            ans += val[i] + " ";
+          }
+          return ans;
+        }));
+        
       break;
     case "clear" : 
       elements = new Array();
