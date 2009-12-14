@@ -4,7 +4,7 @@
       oldX, oldY, curX, curY,
       startTime,
       canvas, ctx, elements = new Array(), predictor =[0,0,0], guess = [0, 0, 0];
-  const MAX_SIZE = 100000;
+  const MAX_VALUE = 100000;
 
   var sign = function(val) {
     return (val < 0 ? -1 : (val > 0 ? 1 : 0));
