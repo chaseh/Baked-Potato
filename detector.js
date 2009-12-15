@@ -9,6 +9,22 @@
   var sign = function(val) {
     return (val < 0 ? -1 : (val > 0 ? 1 : 0));
   }
+
+  var drawScreen = function() {
+    CanvasUtil.clearCanvas(ctx, canvas);
+    //draw the elements
+    for(var i = 0, len = elements.length; i < len; i++) {
+      var cur = elements[i];
+      switch(cur.type) {
+        case "line" :
+          CanvasUtil.strokeLine(ctx, cur.startX, cur.startY, cur.endX, cur.endY);
+          break;
+        case "ellipse" :
+          CanvasUtil.strokeEllipse(ctx, cur.left, cur.top, cur.width, cur.height);
+          break;
+      }
+    }
+  }
  
   DragDrop.enable();
   
@@ -45,8 +61,7 @@
         var diffX = curX - oldX,
             diffY = curY - oldY;
         diffX = (Math.abs(diffX) < 1 ? (diffX < 0 ? -1 : 1): diffX); //purturb slightly for stability
-        var val = diffY / diffX;
-        
+        var val = diffY / diffX;        
         varsq += val;
         sqvar += val * val;
         CanvasUtil.strokeLine(ctx, oldX, oldY, curX, curY);
@@ -68,8 +83,6 @@
             [sqvar - varsq, //get the feature and predict using the learning Algorithm
              new Date().getTime() - startTime, 
              coordsX.length]);
-
-        CanvasUtil.clearCanvas(ctx, canvas);
         
         if(prediction == 0) { //guess that this is a line
           elements.push({type:"line", startX:coordsX[0], startY:coordsY[0], 
@@ -82,39 +95,31 @@
           var x = MathUtil.min(coordsX), y = MathUtil.min(coordsY), 
               w = MathUtil.max(coordsX) - x, h = MathUtil.max(coordsY) - y;
           elements.push({type:"ellipse", left:x, top:y, width:w, height:h});               
-        } else { //guess that this is nothign -- fail case
+        } else { //guess that this is nothing -- fail case
+        
         }
         accuracy = true;
-        //draw the elements
-        for(var i = 0, len = elements.length; i < len; i++) {
-          var cur = elements[i];
-          switch(cur.type) {
-            case "line" :
-              CanvasUtil.strokeLine(ctx, cur.startX, cur.startY, cur.endX, cur.endY);
-              break;
-            case "ellipse" :
-              CanvasUtil.strokeEllipse(ctx, cur.left, cur.top, cur.width, cur.height);
-              break;
-          }
-        }
+        drawScreen();
         break;
     }
   }
  
- 
-var click = function(event) { 
-  //need to use special click handler so events don't fire during drag
-  var target = event.target;
-  switch(target.id) {
-    case "error" :
-      accuracy = false;
-      break;
-    case "clear" : 
-      elements = new Array();
-      CanvasUtil.clearCanvas(ctx, canvas);
-      break;
+  var click = function(event) { 
+    //need to use special click handler so events don't fire during drag
+    var target = event.target;
+    switch(target.id) {
+      case "error" :
+        target.firstChild.data = "YES";
+        setTimeout(function() { target.firstChild.data = "Screwed up?"; }, 250);
+        accuracy = false;
+        break;
+      case "clear" : 
+        elements = new Array();
+        drawScreen();
+        break;
+    }
+    
   }
-}
 
   DragDrop.addHandler("dragstart", draggerStart);
   DragDrop.addHandler("drag", dragger);

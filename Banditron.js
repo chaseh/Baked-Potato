@@ -3,12 +3,10 @@ function Banditron(eta, k, d) {
   for(var i = 0, j; i < k; i++) {
     this.learners[i] = new Array(d);
     for(j = 0; j < d; j++) {
-      this.learners[i][j] = 0;
+      this.learners[i][j] = 0; // initialize the entire thing to zero
     }
   }
   this.eta = eta;
-  this.k = k; 
-  this.d = d;
   this.guess;
   this.example;
   this.maxIndex;
@@ -21,32 +19,36 @@ Banditron.prototype = {
   predict : function(example) {
     this.example = example;
     var max = this.MIN_VALUE, tmp;
-    for(var i = 0, leni = this.k; i < leni; i++) {
+    for(var k = 0, lenk = this.learners.length; k < lenk; k++) {
       tmp = 0;
-      for(var j = 0, lenj = this.d; j < lenj; j++) {
-        tmp += (this.learners[i][j] * example[j]);
+      for(var d = 0, lend = this.learners[0].length; d < lend; d++) {
+        tmp += (this.learners[k][d] * example[d]);
       }
-      if(tmp > max) {
+      if(tmp > max) { // if the current prediction is higher
         max = tmp;
-        this.maxIndex = i; 
+        this.maxIndex = k; 
       }
     }
-    this.guess = Math.random();
-    if(this.guess > (1 + 1 / this.k) * this.eta) {
+    
+    this.guess = Math.random(); // guess a uniform random number
+    if(this.guess < (1 - this.eta)) { // assign lower 1-eta of proability to predicted label
       return this.guess = this.maxIndex;
-    } else {
-      this.guess = Math.floor(this.guess * this.k / this.eta);
-      return this.guess = (this.guess >= this.maxIndex ? this.guess + 1 : this.guess);
+    } else { 
+      // Otherwise scale the rest of the probability space back to (0,1) and sample uniformly  
+      //between (1 - eta, 1) --> subtract (1 - eta) from both sides 
+      this.guess -= (1 - this.eta);//--> (0, eta) --> divide by eta
+      this.guess /= this.eta  // --> (0, 1);
+      return Math.floor(this.guess * lenk); //return a proper index
     }
   },
   update : function(feedback) {
     var invProb, scalor;
-    for(var i = 0, leni = this.k; i < leni; i++) {
-      for(var j = 0, lenj = this.d; j < lenj; j++) {
-        //this is messy but it corectly computes the scalor
-        invProb = (this.maxIndex == i ? 1 / ((1 + 1 / this.k) * this.eta) : this.k / this.eta);
-        scalor = invProb * (feedback ? 1 : 0) * (this.guess == i ? 1 : 0) - (this.maxIndex == i ? 1 : 0);
-        this.learners[i][j] += this.example[j] * scalor;
+    for(var k = 0, lenk = this.learners.length; k < lenk; k++) {
+      //this is messy but it corectly computes the scalor
+      invProb = (this.maxIndex == k ? 1 / ((1 + 1 / lenk) * this.eta) : lenk / this.eta);
+      scalor = invProb * (feedback ? 1 : 0) * (this.guess == k ? k : 0) - (this.maxIndex == k ? 1 : 0);
+      for(var d = 0, lend = this.learners[0].length; d < lend; k++) {
+        this.learners[k][d] += this.example[d] * scalor;
       }    
     }
   }
