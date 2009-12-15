@@ -1,9 +1,9 @@
 function Banditron(eta, k, d) {
-  this.learners = new Array(k);
+  this.learners = new Array(k); //a double array containing the 
   for(var i = 0, j; i < k; i++) {
     this.learners[i] = new Array(d);
     for(j = 0; j < d; j++) {
-      this.learners[i][j] = 0; // initialize the entire thing to zero
+      this.learners[i][j] = 0; // initialize to zero
     }
   }
   this.eta = eta;
@@ -45,9 +45,9 @@ Banditron.prototype = {
     var invProb, scalor;
     for(var k = 0, lenk = this.learners.length; k < lenk; k++) {
       //this is messy but it corectly computes the scalor
-      invProb = (this.maxIndex == k ? 1 / ((1 + 1 / lenk) * this.eta) : lenk / this.eta);
+      invProb = this.maxIndex == k ? 1 / (1 - this.eta + this.eta / lenk) : lenk / this.eta;
       scalor = invProb * (feedback ? 1 : 0) * (this.guess == k ? k : 0) - (this.maxIndex == k ? 1 : 0);
-      for(var d = 0, lend = this.learners[0].length; d < lend; k++) {
+      for(var d = 0, lend = this.learners[0].length; d < lend; d++) {
         this.learners[k][d] += this.example[d] * scalor;
       }    
     }
