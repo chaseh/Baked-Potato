@@ -34,8 +34,8 @@ Banditron.prototype = {
     if(this.guess < (1 - this.eta)) { // assign lower 1-eta of proability to predicted label
       return this.guess = this.maxIndex;
     } else { 
-      // Otherwise scale the rest of the probability space back to (0,1) and sample uniformly  
-      //between (1 - eta, 1) --> subtract (1 - eta) from both sides 
+      // Otherwise scale the rest of the probability space back to (0,1) and sample uniformly from it
+      //starts out between (1 - eta, 1) --> subtract (1 - eta) from both sides 
       this.guess -= (1 - this.eta);//--> (0, eta) --> divide by eta
       this.guess /= this.eta  // --> (0, 1);
       return Math.floor(this.guess * lenk); //return a proper index

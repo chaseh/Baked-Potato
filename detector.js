@@ -1,7 +1,7 @@
 (function() { //private scope so this code can `play-nice' with other packages
   var canvas, ctx, 
       elements = new Array(), 
-      predictor = new Banditron(.25, 3, 4), accuracy,
+      predictor = new Banditron(.25, 5, 4), accuracy = null,
       example = new FeatureFactory();
 
   var drawScreen = function() {
@@ -16,6 +16,10 @@
         case "ellipse" :
           CanvasUtil.strokeEllipse(ctx, cur.left, cur.top, cur.width, cur.height);
           break;
+        case "rect" :
+          CanvasUtil.strokeRect(ctx, cur.left, cur.top, cur.width, cur.height);
+          break;
+
       }
     }
   }
@@ -24,9 +28,9 @@
   
   var draggerStart = function(event) {
     var target = event.target;
-    try {
+    if(accuracy !== null) {
       predictor.update(accuracy);
-    } catch (EX) { }
+    } 
     switch(target.tagName.toLowerCase()) {
       case "canvas":
         canvas = document.getElementById("canvas");
@@ -58,20 +62,24 @@
         CanvasUtil.strokeLine(ctx, example.oldX, example.oldY, example.curX, example.curY);
         var prediction = predictor.predict(example.getFeature());
         
-        if(prediction == 0) { //guess that this is a line
-          elements.push({type:"line", startX:example.coordsX[0], startY:example.coordsY[0], 
-                                      endX:example.curX, endY:example.curY});
-        } if(prediction == 1) { //guess this is an ellipse
-          //find the min, and max of x and y
-          //compute the width and height and add an ellipse to the elements
-          //only works if assume that ellipses have a vertical dimension
-          //and a horizontal dimension. E.g. this does not render rotated ellipses
-          var x = MathUtil.min(example.coordsX), y = MathUtil.min(example.coordsY), 
-              w = MathUtil.max(example.coordsX) - x, h = MathUtil.max(example.coordsY) - y;
-          elements.push({type:"ellipse", left:x, top:y, width:w, height:h});               
-        } else { //guess that this is nothing -- fail case
-        
-        }
+        switch(prediction) {
+          case 0 :  //guess that this is a line
+            elements.push({type:"line", startX:example.coordsX[0], startY:example.coordsY[0], 
+                                        endX:example.curX, endY:example.curY});
+            break;
+          case 1 : //guess this is an ellipse
+            var x = example.minX, y = example.minY, 
+                w = example.maxX - x, h = example.maxY - y;
+            elements.push({type:"ellipse", left:x, top:y, width:w, height:h});
+            break;
+          case 2 : //guess this is a rectangle
+            var x = example.minX, y = example.minY, 
+                w = example.maxX - x, h = example.maxY - y;
+            elements.push({type:"rect", left:x, top:y, width:w, height:h});
+            break;
+          default :
+            break;
+		}
         accuracy = true;
         drawScreen();
         break;
@@ -83,8 +91,8 @@
     var target = event.target;
     switch(target.id) {
       case "error" :
-        target.firstChild.data = "YES";
-        setTimeout(function() { target.firstChild.data = "Screwed up?"; }, 250);
+        target.firstChild.data = "Sorry!";
+        setTimeout(function() {target.firstChild.data = "Screwed up?";}, 250);
         accuracy = false;
         break;
       case "clear" : 
@@ -92,7 +100,6 @@
         drawScreen();
         break;
     }
-    
   }
 
   DragDrop.addHandler("dragstart", draggerStart);
