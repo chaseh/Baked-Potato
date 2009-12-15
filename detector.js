@@ -5,7 +5,7 @@
       startTime,
       canvas, ctx, 
       elements = new Array(), 
-      predictor = new Banditron(.25, 3,2);
+      predictor = new Banditron(.25, 3, 3), accuracy;
   var sign = function(val) {
     return (val < 0 ? -1 : (val > 0 ? 1 : 0));
   }
@@ -14,6 +14,10 @@
   
   var draggerStart = function(event) {
     var target = event.target;
+    try {
+      predictor.update(accuracy);
+      //alert("HERE");
+    } catch (EX) { }
     switch(target.tagName.toLowerCase()) {
       case "canvas":
         startTime = new Date().getTime();
@@ -60,17 +64,17 @@
         CanvasUtil.strokeLine(ctx, oldX, oldY, curX, curY);
         varsq /= coordsX.length; varsq = varsq * varsq;
         sqvar /= coordsX.length;
-        var example = [sqvar - varsq, //get the feature and predict using the learning Algorithm
-                       new Date().getTime() - startTime, 
-                       coordsX.length],
-                       prediction = predictor.predict(example);
+        var prediction = predictor.predict(
+            [sqvar - varsq, //get the feature and predict using the learning Algorithm
+             new Date().getTime() - startTime, 
+             coordsX.length]);
 
         CanvasUtil.clearCanvas(ctx, canvas);
         
         if(prediction == 0) { //guess that this is a line
           elements.push({type:"line", startX:coordsX[0], startY:coordsY[0], 
                                       endX:curX, endY:curY});
-        } else { //guess that this is an ellipse
+        } if(prediction == 1) { //guess this is an ellipse
           //find the min, and max of x and y
           //compute the width and height and add an ellipse to the elements
           //only works if assume that ellipses have a vertical dimension
@@ -78,8 +82,9 @@
           var x = MathUtil.min(coordsX), y = MathUtil.min(coordsY), 
               w = MathUtil.max(coordsX) - x, h = MathUtil.max(coordsY) - y;
           elements.push({type:"ellipse", left:x, top:y, width:w, height:h});               
+        } else { //guess that this is nothign -- fail case
         }
-        
+        accuracy = true;
         //draw the elements
         for(var i = 0, len = elements.length; i < len; i++) {
           var cur = elements[i];
@@ -102,7 +107,7 @@ var click = function(event) {
   var target = event.target;
   switch(target.id) {
     case "error" :
-      predictor.negativeFeedback();
+      accuracy = false;
       break;
     case "clear" : 
       elements = new Array();
