@@ -1,7 +1,7 @@
 (function() { //private scope so this code can `play-nice' with other packages
   var canvas, ctx, 
       elements = new Array(), 
-      predictor = new Banditron(.25, 5, 4), accuracy = null,
+      predictor = new Banditron(.25, 4, 5), accuracy = null,
       example = new FeatureFactory();
 
   var drawScreen = function() {
@@ -39,7 +39,7 @@
         ctx.shadowColor = 'rgba(90, 90, 90, 0.7)';
         ctx.lineCap = "round";
         ctx.lineWidth = "4";
-        example.addPoint(event.clientX, event.clientY);
+        example.startFeature(event.clientX, event.clientY);
         break;
       }
   }
