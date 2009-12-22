@@ -76,7 +76,7 @@
             
           case "dblclick":
             if (hasDragged === false) {
-              dragdrop.fire({type: eventName[7], target: target, //quickdblclick
+              dragdrop.fire({type: eventName[7], target: target, //dblclick
   	            clientX: event.clientX, clientY: event.clientY});
             }
     	    break;

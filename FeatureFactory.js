@@ -56,8 +56,9 @@ FeatureFactory.prototype = {
     this.secondSqVar /= len - 1;
     this.muX /= len;
     this.muY /= len;
+    var dist = Math.sqrt(Math.pow(this.coordsX[0] - this.curX, 2) 
+                       + Math.pow(this.coordsY[0] - this.curY, 2));
     return [this.gradSqVar - this.gradVarSq, this.secondSqVar - this.secondVarSq,
-            Math.sqrt(Math.pow(this.coordsX[0] - this.curX, 2) + Math.pow(this.coordsY[0] - this.curY, 2)),
-            len, this.muY/this.muX];
+            dist, len, this.muY/this.muX];
   } 
 }

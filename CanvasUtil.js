@@ -53,9 +53,9 @@ var CanvasUtil = {
 		ctx.strokeRect(x, y, w, h);
       	ctx.closePath();
     },
-
     // Clear canvas
     clearCanvas: function(ctx, canvas) {
       ctx.clearRect(0,0, canvas.width, canvas.height);    
-    }
+    },
+    
 };

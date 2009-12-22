@@ -6,7 +6,7 @@ EventTarget.prototype = {
     constructor: EventTarget,
 
     addHandler: function(type, handler){
-        if (typeof this.handlers[type] == "undefined"){
+        if (typeof this.handlers[type] == "undefined") {
             this.handlers[type] = [];
         }
         this.handlers[type].push(handler);
