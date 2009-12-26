@@ -12,14 +12,19 @@
     <link rel="stylesheet" type="text/css" href="mystyle.css" />
 </head>
 <body>
+<select class="errorbox" id = "errorbox">
+  <option value="0">Line</option>
+  <option value="1">Circle</option>
+  <option value="2">Square</option>
+  <option value="3">Unknown</option>
+</select>
 <div class="error draggable" id="error">Screwed up?</div>
-<input type="text" class="errorbox" id = "errorbox" name="errorbox" size="30" maxlength="10"></input>
-<canvas class="draggable" id="canvas" width="600" height="500"> </canvas>
+<canvas class="draggable" id="canvas" width="600" height="500"></canvas>
 <div class="clear draggable" id="clear">Clear the canvas?</div>
-<br/>
-0 -- line<br/>
-1 -- circle<br/>
-2 -- square<br/>
-3 -- nothing<br/>
+<br />
+<h3>
+Draw a shape! If the computer guesses incorrectly, <br />
+then select the correct shape from the drop down menu <br />
+and click `screwed up'.</h3>
 </body>
 </html>

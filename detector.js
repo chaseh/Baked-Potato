@@ -19,7 +19,6 @@
         case "rect" :
           CanvasUtil.strokeRect(ctx, cur.left, cur.top, cur.width, cur.height);
           break;
-
       }
     }
   }
@@ -60,24 +59,29 @@
       case "canvas":
         example.addPoint(event.clientX, event.clientY);
         CanvasUtil.strokeLine(ctx, example.oldX, example.oldY, example.curX, example.curY);
-        var prediction = predictor.predict(example.getFeature());
-        
+        var prediction = predictor.predict(example.getFeature()), 
+        	x = example.minX, y = example.minY, 
+            w = example.maxX - x, h = example.maxY - y;        
         switch(prediction) {
           case 0 :  //guess that this is a line
             elements.push({type:"line", startX:example.startX, startY:example.startY, 
-                                        endX:example.curX, endY:example.curY});
+                                        endX:example.curX, endY:example.curY,
+                                        left:x, top:y, width:w, height:h});
             break;
           case 1 : //guess this is an ellipse
-            var x = example.minX, y = example.minY, 
-                w = example.maxX - x, h = example.maxY - y;
-            elements.push({type:"ellipse", left:x, top:y, width:w, height:h});
+            elements.push({type:"ellipse", startX:example.startX, startY:example.startY, 
+                                        endX:example.curX, endY:example.curY,
+                                        left:x, top:y, width:w, height:h});
             break;
           case 2 : //guess this is a rectangle
-            var x = example.minX, y = example.minY, 
-                w = example.maxX - x, h = example.maxY - y;
-            elements.push({type:"rect", left:x, top:y, width:w, height:h});
+            elements.push({type:"rect", startX:example.startX, startY:example.startY, 
+                                        endX:example.curX, endY:example.curY,
+                                        left:x, top:y, width:w, height:h});
             break;
           default :
+            elements.push({type:"fail", startX:example.startX, startY:example.startY, 
+                                        endX:example.curX, endY:example.curY,
+                                        left:x, top:y, width:w, height:h});
             break;
 		}
         correct = prediction;
@@ -94,6 +98,21 @@
         target.firstChild.data = "Sorry!";
         setTimeout(function() {target.firstChild.data = "Screwed up?";}, 250);
         correct = parseInt(document.getElementById("errorbox").value);
+        var elmn = elements[elements.length - 1];
+        switch(correct) {
+          case 0 : //correct the shape to a line
+            elmn.type = "line";
+            break;
+          case 1 : //correct the shape to a line
+            elmn.type = "ellipse";
+            break;
+          case 2 : //correct the shape to a line
+            elmn.type = "rect";
+            break;
+          default :
+            elements.pop();
+        }
+        drawScreen();
         break;
       case "clear" : 
         elements = new Array();
