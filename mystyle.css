@@ -27,10 +27,16 @@ canvas {
 	position:absolute; 
 	background-color: yellow; 
 	width: 100px; 
-	height: 50px; 
+	height: 20px;
+	top: 30px;
 	border: 1px dotted black;
 }
 
+.errorbox {
+	position:absolute; 
+	left:8px;
+	width:96px;
+}
 .clear {
 	text-align: center;
 	vertical-align: center;

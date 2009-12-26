@@ -1,5 +1,4 @@
 function FeatureFactory() {
-  this.coordsX; this.coordsY;
   this.gradVarSq; this.gradSqVar;
   this.secondVarSq; this.secondSqVar;
   this.olderX; this.olderY;
@@ -8,26 +7,30 @@ function FeatureFactory() {
   this.maxX; this.minX;
   this.maxY; this.minY;
   this.muX; this.muY;
+  this.startX; this.startY;
+  this.length;
+  this.startTime;
 }
 
 FeatureFactory.prototype = {
   constructor : FeatureFactory,
   startFeature : function(x, y) {
-    this.coordsX = new Array(); this.coordsY = new Array();
+    this.length = 1;
     this.curX = x; this.curY = y;
     this.oldX = x; this.oldY = y;
     this.muX = x; this.muY = y;
-    this.coordsX.push(x); this.coordsY.push(y);
     this.gradVarSq = 0, this.gradSqVar = 0;
     this.secondVarSq = 0, this.secondSqVar = 0;
     this.maxX = x; this.maxY = y;
-    this.minX = x; this.minY = y;  
+    this.minX = x; this.minY = y;
+    this.startX = x; this.startY = y;
+    this.startTime = new Date().getTime();
   },
   addPoint : function(x, y) {
     this.olderX = this.oldX; this.olderY = this.oldY;
     this.oldX = this.curX; this.oldY = this.curY;
     this.curX = x; this.curY = y;
-    this.coordsX.push(x); this.coordsY.push(y);
+    this.length++;
     this.muX += x; this.muY += y;
 
     var dX = this.curX - this.oldX,
@@ -49,15 +52,16 @@ FeatureFactory.prototype = {
     this.minY = y < this.minY ? y : this.minY;
   },
   getFeature : function() {
-    var len = this.coordsX.length;
+    var len = this.length;
     this.gradVarSq /= len - 1; this.gradVarSq *= this.gradVarSq;
     this.gradSqVar /= len - 1;
     this.secondVarSq /= len - 1; this.secondVarSq *= this.secondVarSq;
     this.secondSqVar /= len - 1;
     this.muX /= len;
     this.muY /= len;
-    var dist = Math.sqrt(Math.pow(this.coordsX[0] - this.curX, 2) 
-                       + Math.pow(this.coordsY[0] - this.curY, 2));
+    var dist = Math.sqrt(Math.pow(this.startX - this.curX, 2) 
+                       + Math.pow(this.startY - this.curY, 2));
+//    alert((new Date().getTime() - this.startTime) / len); //alert the time per point
     return [this.gradSqVar - this.gradVarSq, this.secondSqVar - this.secondVarSq,
             dist, len, this.muY/this.muX];
   } 

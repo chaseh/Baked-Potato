@@ -1,7 +1,7 @@
 (function() { //private scope so this code can `play-nice' with other packages
   var canvas, ctx, 
       elements = new Array(), 
-      predictor = new Banditron(.25, 4, 5), accuracy = null,
+      predictor = new Perceptron(4, 5), correct = null,
       example = new FeatureFactory();
 
   var drawScreen = function() {
@@ -28,8 +28,8 @@
   
   var draggerStart = function(event) {
     var target = event.target;
-    if(accuracy !== null) {
-      predictor.update(accuracy);
+    if(correct !== null) {
+      predictor.update(correct);
     } 
     switch(target.tagName.toLowerCase()) {
       case "canvas":
@@ -64,7 +64,7 @@
         
         switch(prediction) {
           case 0 :  //guess that this is a line
-            elements.push({type:"line", startX:example.coordsX[0], startY:example.coordsY[0], 
+            elements.push({type:"line", startX:example.startX, startY:example.startY, 
                                         endX:example.curX, endY:example.curY});
             break;
           case 1 : //guess this is an ellipse
@@ -80,7 +80,7 @@
           default :
             break;
 		}
-        accuracy = true;
+        correct = prediction;
         drawScreen();
         break;
     }
@@ -93,7 +93,7 @@
       case "error" :
         target.firstChild.data = "Sorry!";
         setTimeout(function() {target.firstChild.data = "Screwed up?";}, 250);
-        accuracy = false;
+        correct = parseInt(document.getElementById("errorbox").value);
         break;
       case "clear" : 
         elements = new Array();

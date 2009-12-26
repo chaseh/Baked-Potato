@@ -9,7 +9,6 @@
 		var target = EventUtil.getTarget(event);
 		focused.process(EventUtil.getCharCode(event), event.ctrlKey || event.metaKey);
 	});
-
 	DragDrop.enable();       
 	DragDrop.addHandler("click", function(event) {
 		var target = event.target, body = document.body;
