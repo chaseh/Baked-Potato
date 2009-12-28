@@ -7,15 +7,13 @@ function FeatureFactory() {
   this.maxX; this.minX;
   this.maxY; this.minY;
   this.muX; this.muY;
-  this.startX; this.startY;
+  this.coordsX; this.coordsY;
   this.length;
-  this.startTime;
 }
 
 FeatureFactory.prototype = {
   constructor : FeatureFactory,
   startFeature : function(x, y) {
-    this.length = 1;
     this.curX = x; this.curY = y;
     this.oldX = x; this.oldY = y;
     this.muX = x; this.muY = y;
@@ -23,8 +21,8 @@ FeatureFactory.prototype = {
     this.secondVarSq = 0, this.secondSqVar = 0;
     this.maxX = x; this.maxY = y;
     this.minX = x; this.minY = y;
-    this.startX = x; this.startY = y;
-    this.startTime = new Date().getTime();
+    this.coordsX = [x]; this.coordsY = [y];
+    this.length = 1;
   },
   addPoint : function(x, y) {
     this.olderX = this.oldX; this.olderY = this.oldY;
@@ -50,6 +48,10 @@ FeatureFactory.prototype = {
     this.minX = x < this.minX ? x : this.minX;
     this.maxY = y > this.maxY ? y : this.maxY;
     this.minY = y < this.minY ? y : this.minY;
+    
+    if((ddY / ddX) != 0) {  //push the points if they are not a part of the same line
+      this.coordsX.push(x); this.coordsY.push(y);
+    }
   },
   getFeature : function() {
     var len = this.length;
@@ -59,9 +61,8 @@ FeatureFactory.prototype = {
     this.secondSqVar /= len - 1;
     this.muX /= len;
     this.muY /= len;
-    var dist = Math.sqrt(Math.pow(this.startX - this.curX, 2) 
-                       + Math.pow(this.startY - this.curY, 2));
-//    alert((new Date().getTime() - this.startTime) / len); //alert the time per point
+    var dist = Math.sqrt(Math.pow(this.coordsX[0] - this.curX, 2) 
+                       + Math.pow(this.coordsY[0] - this.curY, 2));
     return [this.gradSqVar - this.gradVarSq, this.secondSqVar - this.secondVarSq,
             dist, len, this.muY/this.muX];
   } 

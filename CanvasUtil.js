@@ -40,14 +40,18 @@ var CanvasUtil = {
         ctx.stroke();
     },
     // Line methods
-    strokeLine:function(ctx, x1, y1, x2, y2) {
-    	ctx.beginPath();
-    	ctx.moveTo(x1, y1);
-      	ctx.lineTo(x2, y2);
-      	ctx.stroke();
-      	ctx.closePath();
+    beginLine: function(ctx, x, y) {
+      ctx.beginPath();
+      ctx.moveTo(x,y);
     },
-    // Line methods
+    strokeLine:function(ctx, x, y) {
+      	ctx.lineTo(x, y);
+      	ctx.stroke();
+    },
+    endLine: function(ctx) {
+       ctx.closePath();
+    },
+    // Rect methods
     strokeRect:function(ctx, x, y, w, h) {
     	ctx.beginPath();
 		ctx.strokeRect(x, y, w, h);

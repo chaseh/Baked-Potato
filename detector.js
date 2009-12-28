@@ -1,128 +1,89 @@
 (function() { //private scope so this code can `play-nice' with other packages
-  var canvas, ctx, 
-      elements = new Array(), 
-      predictor = new Perceptron(4, 5), correct = null,
-      example = new FeatureFactory();
+  var canvas = null, ctx = null, 
+      predictor = new Perceptron(5, 5),
+      example = new FeatureFactory(), label = null;
+      
+  window.onload = function() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+    ctx.strokeStyle = 'rgb(0, 0, 0)';
+    ctx.lineCap = "round";
+    ctx.lineWidth = "2";
+    
+    document.getElementById('error').onclick = function () {
+      var child = document.getElementById('error').firstChild;
+      child.data = "Sorry!";
+      setTimeout(function() {child.data = "Wrong?";}, 250);
+      label = parseInt(document.getElementById("errorbox").value);
+      SVGUtil.removeLast();
+      drawLast();  
+    };
+  
+    document.getElementById('undo').onclick = function() {
+      SVGUtil.removeLast();
+    };
 
-  var drawScreen = function() {
-    CanvasUtil.clearCanvas(ctx, canvas);
-    //draw the elements
-    for(var i = 0, len = elements.length; i < len; i++) {
-      var cur = elements[i];
-      switch(cur.type) {
-        case "line" :
-          CanvasUtil.strokeLine(ctx, cur.startX, cur.startY, cur.endX, cur.endY);
-          break;
-        case "ellipse" :
-          CanvasUtil.strokeEllipse(ctx, cur.left, cur.top, cur.width, cur.height);
-          break;
-        case "rect" :
-          CanvasUtil.strokeRect(ctx, cur.left, cur.top, cur.width, cur.height);
-          break;
-      }
+    document.getElementById('clear').onclick = function() {
+      SVGUtil.clearCanvas();
+    };
+  };
+  
+  var drawLast = function() {
+    switch(label) {
+      case 0:
+        SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.curX, example.curY);
+        break;
+      case 1:
+        var t = example.minX, l = example.minY,
+            w = example.maxX - t, h = example.maxY - l;
+        SVGUtil.strokeEllipse(t, l, w, h);
+        break;
+      case 2: //need rotated rectangles e.g. diamonds
+        var t = example.minX, l = example.minY,
+            w = example.maxX - t, h = example.maxY - l;
+        SVGUtil.strokeRect(t, l, w, h);
+        break;
+      case 3: //assumes a right triangle. This needs to be improved. Need rotated shapes
+        SVGUtil.strokeTriangle(example.minX,example.minY,example.maxX,example.maxY);
+        break;
+      case 4: //unrecognizable
+        SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); //try to smooth the unrecognizable gesture
+        break;
     }
-  }
+  };
  
   DragDrop.enable();
   
   var draggerStart = function(event) {
-    var target = event.target;
-    if(correct !== null) {
-      predictor.update(correct);
+    var x = event.clientX - canvas.offsetLeft, 
+        y = event.clientY - canvas.offsetTop;
+    if(label !== null) { //if this is the first gesture then the previous label is null
+      predictor.update(label);
     } 
-    switch(target.tagName.toLowerCase()) {
-      case "canvas":
-        canvas = document.getElementById("canvas");
-        ctx = canvas.getContext('2d');
-        ctx.strokeStyle = 'rgba(90, 90, 90, .9)';
-        ctx.shadowColor = 'rgba(90, 90, 90, 0.7)';
-        ctx.lineCap = "round";
-        ctx.lineWidth = "4";
-        example.startFeature(event.clientX, event.clientY);
-        break;
-      }
-  }
+    example.startFeature(x, y);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
 
   var dragger = function(event) {
-    var target = event.target;
-    switch(target.tagName.toLowerCase()) {
-      case "canvas":
-        example.addPoint(event.clientX, event.clientY);
-        CanvasUtil.strokeLine(ctx, example.oldX, example.oldY, example.curX, example.curY);
-        break;
-    }
-  }
+    var x = event.clientX - canvas.offsetLeft, 
+        y = event.clientY - canvas.offsetTop;
+    example.addPoint(x, y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
 
   var draggerEnd = function(event) {
-    var target = event.target;
-    switch(target.tagName.toLowerCase()) {
-      case "canvas":
-        example.addPoint(event.clientX, event.clientY);
-        CanvasUtil.strokeLine(ctx, example.oldX, example.oldY, example.curX, example.curY);
-        var prediction = predictor.predict(example.getFeature()), 
-        	x = example.minX, y = example.minY, 
-            w = example.maxX - x, h = example.maxY - y;        
-        switch(prediction) {
-          case 0 :  //guess that this is a line
-            elements.push({type:"line", startX:example.startX, startY:example.startY, 
-                                        endX:example.curX, endY:example.curY,
-                                        left:x, top:y, width:w, height:h});
-            break;
-          case 1 : //guess this is an ellipse
-            elements.push({type:"ellipse", startX:example.startX, startY:example.startY, 
-                                        endX:example.curX, endY:example.curY,
-                                        left:x, top:y, width:w, height:h});
-            break;
-          case 2 : //guess this is a rectangle
-            elements.push({type:"rect", startX:example.startX, startY:example.startY, 
-                                        endX:example.curX, endY:example.curY,
-                                        left:x, top:y, width:w, height:h});
-            break;
-          default :
-            elements.push({type:"fail", startX:example.startX, startY:example.startY, 
-                                        endX:example.curX, endY:example.curY,
-                                        left:x, top:y, width:w, height:h});
-            break;
-		}
-        correct = prediction;
-        drawScreen();
-        break;
-    }
-  }
- 
-  var click = function(event) { 
-    //need to use special click handler so events don't fire during drag
-    var target = event.target;
-    switch(target.id) {
-      case "error" :
-        target.firstChild.data = "Sorry!";
-        setTimeout(function() {target.firstChild.data = "Screwed up?";}, 250);
-        correct = parseInt(document.getElementById("errorbox").value);
-        var elmn = elements[elements.length - 1];
-        switch(correct) {
-          case 0 : //correct the shape to a line
-            elmn.type = "line";
-            break;
-          case 1 : //correct the shape to a line
-            elmn.type = "ellipse";
-            break;
-          case 2 : //correct the shape to a line
-            elmn.type = "rect";
-            break;
-          default :
-            elements.pop();
-        }
-        drawScreen();
-        break;
-      case "clear" : 
-        elements = new Array();
-        drawScreen();
-        break;
-    }
-  }
-
+    var x = event.clientX - canvas.offsetLeft, 
+        y = event.clientY - canvas.offsetTop;
+    example.addPoint(x, y);
+    ctx.lineTo(x, y);
+    label = predictor.predict(example.getFeature());
+    ctx.clearRect(0,0, canvas.width, canvas.height); //clear canvas
+    drawLast();
+  };
+   
   DragDrop.addHandler("dragstart", draggerStart);
   DragDrop.addHandler("drag", dragger);
   DragDrop.addHandler("dragend", draggerEnd);
-  DragDrop.addHandler("click", click);
 })();
