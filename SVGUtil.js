@@ -45,7 +45,7 @@ var SVGUtil = {
       var svg = document.getElementById('display');
       var triangle = document.createElementNS(this.svgNS,"path");
       
-      var str = "M" + x + "," + y + " L" + x + "," + Y + " L" + X + "," + Y + " L" + x + "," + y;
+      var str = "M" + x + "," + Y + " L" + X + "," + Y + " L" + .5 * (X + x) + "," + y + " L" + x + "," + Y;
       triangle.setAttributeNS(null, "d", str);
       triangle.setAttributeNS(null, "d", str);
 	  triangle.setAttributeNS(null,'stroke','rgb(0, 0, 0)');

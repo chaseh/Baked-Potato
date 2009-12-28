@@ -43,7 +43,7 @@
             w = example.maxX - t, h = example.maxY - l;
         SVGUtil.strokeRect(t, l, w, h);
         break;
-      case 3: //assumes a right triangle. This needs to be improved. Need rotated shapes
+      case 3: //assumes upwards equilateral triangle. This needs to be improved. Need rotated shapes
         SVGUtil.strokeTriangle(example.minX, example.minY, example.maxX, example.maxY);
         break;
       case 4: //unrecognizable
