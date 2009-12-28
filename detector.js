@@ -44,7 +44,7 @@
         SVGUtil.strokeRect(t, l, w, h);
         break;
       case 3: //assumes a right triangle. This needs to be improved. Need rotated shapes
-        SVGUtil.strokeTriangle(example.minX,example.minY,example.maxX,example.maxY);
+        SVGUtil.strokeTriangle(example.minX, example.minY, example.maxX, example.maxY);
         break;
       case 4: //unrecognizable
         SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); //try to smooth the unrecognizable gesture

@@ -9,8 +9,9 @@ var SVGUtil = {
       ellipse.setAttributeNS(null, "rx", w/2);
       ellipse.setAttributeNS(null, "ry",h/2);
       ellipse.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
-      ellipse.setAttributeNS(null,'fill', 'rgba(255,255,255,0)');
 	  ellipse.setAttributeNS(null,'stroke-width',2);
+      ellipse.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
+      ellipse.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(ellipse);   
     },
     // Line methods
@@ -23,7 +24,6 @@ var SVGUtil = {
       line.setAttributeNS(null, "y2", y2);
       line.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
 	  line.setAttributeNS(null,'stroke-width',2);
-      line.setAttributeNS(null,'fill', 'rgba(255,255,255,0)');
 	  svg.appendChild(line);       
     },
     // Rect methods
@@ -36,7 +36,8 @@ var SVGUtil = {
       rect.setAttributeNS(null, "height", h);
       rect.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
 	  rect.setAttributeNS(null,'stroke-width',2);
-      rect.setAttributeNS(null,'fill', 'rgba(255,255,255,0)');
+      rect.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
+      rect.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(rect);     
     },
     // Triangle methods
@@ -49,7 +50,8 @@ var SVGUtil = {
       triangle.setAttributeNS(null, "d", str);
 	  triangle.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
 	  triangle.setAttributeNS(null,'stroke-width',2);
-      triangle.setAttributeNS(null,'fill', 'rgba(255,255,255,0)');
+      triangle.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
+      triangle.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(triangle);
     },
     // Curve methods
@@ -64,7 +66,8 @@ var SVGUtil = {
       path.setAttributeNS(null, "d", str);
       path.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
 	  path.setAttributeNS(null,'stroke-width', 2);
-      path.setAttributeNS(null,'fill', 'rgba(255,255,255,0)');
+      path.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
+      path.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(path);     
     },
     // Clear canvas
