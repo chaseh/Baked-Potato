@@ -1,153 +1,88 @@
 (function() { //private scope so this code can `play-nice' with other packages
-  var coordsX, coordsY, 
-      varSq, sqVar,
-      oldX, oldY, curX, curY,
-      startTime,
-      canvas, ctx, elements = new Array(), predictor =[0,0,0], guess = [0, 0, 0];
-  const MAX_VALUE = 100000;
+  var canvas = null, ctx = null, 
+      predictor = new Perceptron(5, 5),
+      example = new FeatureFactory(), label = null;
+      
+  window.onload = function() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+    ctx.strokeStyle = 'rgb(0, 0, 0)';
+    ctx.lineCap = "round";
+    ctx.lineWidth = "2";
+    
+    document.getElementById('error').onclick = function () {
+      var child = document.getElementById('error').firstChild;
+      child.data = "Sorry!";
+      setTimeout(function() {child.data = "Wrong?";}, 250);
+      label = parseInt(document.getElementById("errorbox").value);
+      SVGUtil.removeLast();
+      drawLast();  
+    };
+  
+    document.getElementById('undo').onclick = function() {
+      SVGUtil.removeLast();
+    };
 
-  var sign = function(val) {
-    return (val < 0 ? -1 : (val > 0 ? 1 : 0));
-  }
+    document.getElementById('clear').onclick = function() {
+      SVGUtil.clearCanvas();
+    };
+  };
+  
+  var drawLast = function() {
+    switch(label) {
+      case 0:
+        SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.curX, example.curY);
+        break;
+      case 1:
+        var t = example.minX, l = example.minY,
+            w = example.maxX - t, h = example.maxY - l;
+        SVGUtil.strokeEllipse(t, l, w, h);
+        break;
+      case 2: //need rotated rectangles e.g. diamonds
+        var t = example.minX, l = example.minY,
+            w = example.maxX - t, h = example.maxY - l;
+        SVGUtil.strokeRect(t, l, w, h);
+        break;
+      case 3: //assumes upwards equilateral triangle. This needs to be improved. Need rotated shapes
+        SVGUtil.strokeTriangle(example.minX, example.minY, example.maxX, example.maxY);
+        break;
+      case 4: //unrecognizable
+        SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); //try to smooth the unrecognizable gesture
+        break;
+    }
+  };
  
-  var mapReduce = function(val, mapper, reducer) {
-    for(var i = 0, len = val.lenght; i < len; i++) {
-      val[i] = mapper(val[i]);
-    }
-    return reducer(val);
-  }
-
-  var avg = function(val) {
-    var ans = 0;
-    for(var i = 0, len = val.length; i < len; i++) {
-      ans += val[i];
-    }
-    return ans / len;
-  }
-
-  var max = function(val) {
-    var ans = 0;
-    for(var i = 0, len = val.length; i < len; i++) {
-      ans = (val[i] > ans? val[i] : ans);
-    }
-    return ans;
-  }
-  
-  var min = function(val) {
-    var ans = MAX_VALUE;
-    for(var i = 0, len = val.length; i < len; i++) {
-      ans = (val[i] < ans? val[i] : ans);
-    }
-    return ans;
-  }
-  
   DragDrop.enable();
   
   var draggerStart = function(event) {
-    var target = event.target;
-    switch(target.tagName.toLowerCase()) {
-      case "canvas":
-        startTime = new Date().getTime();
-        coordsX = new Array(); coordsY = new Array();
-        curX = event.clientX; curY = event.clientY;
-        coordsX.push(curX); coordsY.push(curY);
-        varsq = 0, sqvar = 0;
-        canvas = document.getElementById("canvas");
-        ctx = canvas.getContext('2d');
-        ctx.strokeStyle = 'rgba(90, 90, 90, .9)';
-        ctx.shadowColor = 'rgba(90, 90, 90, 0.7)';
-        ctx.lineCap = "round";
-        ctx.lineWidth = "4";
-        ctx.beginPath();
-        ctx.moveTo(curX, curY);
-        break;
-      }
-  }
+    var x = event.clientX - canvas.offsetLeft, 
+        y = event.clientY - canvas.offsetTop;
+    if(label !== null) { //if this is the first gesture then the previous label is null
+      predictor.update(label);
+    } 
+    example.startFeature(x, y);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
 
   var dragger = function(event) {
-    var target = event.target;
-    switch(target.tagName.toLowerCase()) {
-      case "canvas":
-        oldX = curX; oldY = curY;
-        curX = event.clientX; curY = event.clientY;
-        coordsX.push(curX); coordsY.push(curY);
-        var diffX = curX - oldX, 
-            diffY = curY - oldY;
-        var rat1 = diffX / diffY,
-            rat2 = diffY / diffX;
-        var val = sign(rat1) * Math.min(Math.abs(rat1), Math.abs(rat2));
-        varsq += val;
-        sqvar += val * val;
-        ctx.lineTo(curX, curY);
-        ctx.stroke();
-        break;
-    }
-  }
+    var x = event.clientX - canvas.offsetLeft, 
+        y = event.clientY - canvas.offsetTop;
+    example.addPoint(x, y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
 
   var draggerEnd = function(event) {
-    var target = event.target;
-    switch(target.tagName.toLowerCase()) {
-      case "canvas":
-        oldX = curX; oldY = curY;
-        curX = event.clientX; curY = event.clientY;
-        coordsX.push(curX); coordsY.push(curY);
-        varsq /= coordsX.length;
-        varsq = varsq * varsq;
-        sqvar /= coordsX.length;
-        guess[0] = sqvar - varsq, guess[1] = new Date().getTime() - startTime, guess[2] = coordsX.length;
-        ctx.closePath();
-        ctx.clearRect(0,0, canvas.width, canvas.height);
-        if(predictor[0] * guess[0] + predictor[1] * guess[1] + predictor[2] * guess[2]> 0) { //guess that this is a line
-          elements.push([coordsX[0], coordsY[0], curX, curY]);
-        } else {
-          var x = avg(coordsX), y = avg(coordsY), rad = 0;
-          for(var i = 0, len = coordsX.length; i < len; i++) {
-            rad += Math.sqrt((x - coordsX[i]) * (x - coordsX[i]) 
-            			   + (y - coordsY[i]) * (y - coordsY[i]));
-          }
-          rad /= len;
-          elements.push([x, y, rad]);
-        }
-        ctx.beginPath();
-        for(var i = 0, len = elements.length; i < len; i++) {
-          var cur = elements[i];
-          if(cur.length == 3) {
-            ctx.moveTo(cur[0] + cur[2], cur[1]);
-            ctx.arc(cur[0], cur[1], cur[2], 0, 2 * Math.PI, true);
-          } else if(cur.length == 4) {
-            ctx.moveTo(cur[0], cur[1]);
-            ctx.lineTo(cur[2], cur[3]);
-          }
-        }
-        ctx.stroke();
-        ctx.closePath();
-        var error = document.getElementById("error");
-        //error.style.visibility = "visible";
-        //setTimeout(function() { error.style.visibility = "hidden"}, 1000);
-        break;
-    }
-  }
- 
-  window.onload = function() {
-    //TODO: all of the onload stuff should be hooked up elsewhere.
-    //Hook up the button handlers.  These need to be created, so we'll wait until the window is loaded to hook them up.
-    document.getElementById('error').onclick = function(event) {
-      var corrector = (predictor[0] * guess[0] + predictor[1] * guess[1] + predictor[2] * guess[2]> 0 ? -1 : 1);
-      predictor[0] = predictor[0] + corrector * guess[0];
-      predictor[1] = predictor[1] + corrector * guess[1];
-      predictor[2] = predictor[2] + corrector * guess[2];
-      alert(predictor[0] + " " + predictor[1] + " " + predictor[2]);
-      break;
-    }
-  
-    document.getElementById('clear').onclick = function(event) {
-      elements = new Array();
-      ctx.clearRect(0,0, canvas.width, canvas.height);
-      break;
-    }
-    
-  }
-  
+    var x = event.clientX - canvas.offsetLeft, 
+        y = event.clientY - canvas.offsetTop;
+    example.addPoint(x, y);
+    ctx.lineTo(x, y);
+    label = predictor.predict(example.getFeature());
+    ctx.clearRect(0,0, canvas.width, canvas.height); //clear canvas
+    drawLast();
+  };
+   
   DragDrop.addHandler("dragstart", draggerStart);
   DragDrop.addHandler("drag", dragger);
   DragDrop.addHandler("dragend", draggerEnd);

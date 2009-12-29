@@ -5,20 +5,20 @@
 var EventUtil = {
 
     addHandler: function(element, type, handler) {
-        if (element.addEventListener) {
-        	addHandler = function(element, type, handler) {
-            	element.addEventListener(type, handler, false);
-            }
-        } else if (element.attachEvent) {
-        	addHandler = function(element, type, handler) {
-	            element.attachEvent("on" + type, handler);
-	        }
-        } else {
-        	addHandler = function(element, type, handler) {
-	            element["on" + type] = handler;
-    	    }
-    	}
-    	return addHandler(element, type, handler);
+     if (element.addEventListener) {
+       addHandler = function(element, type, handler) {
+         element.addEventListener(type, handler, false);
+       }
+     } else if (element.attachEvent) {
+       addHandler = function(element, type, handler) {
+	     element.attachEvent("on" + type, handler);
+	   }
+     } else {
+       addHandler = function(element, type, handler) {
+	     element["on" + type] = handler;
+       }
+      }
+      return addHandler(element, type, handler);
     },
     
     getButton: function(event) {
@@ -59,7 +59,7 @@ var EventUtil = {
     },
     
     getClipboardText: function(event) {
-        var clipboardData = (event.clipboardData || window.clipboardData);
+        //var clipboardData = (event.clipboardData || window.clipboardData);
         if(event.clipboardData) {
         	getClipboardText = function(event) {
         		return event.clipboardData.getData("text");
