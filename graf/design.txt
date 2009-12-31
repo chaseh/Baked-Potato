@@ -1,0 +1,33 @@
+Goal: A way to quickly sketch and manipulate shapes to create diagrams.
+
+Consists of shapes. Each:
+
+* Can be created by drawing (using the perceptron or detector)
+* Can be styled:
+	-Stroked
+	-Filled
+* Can be rotated
+	- Each shape has a "true north," unlike Adobe Illustrator
+* Can be scaled
+* Can maintain 0 or more endpoints with Connectors
+* Can have text
+* Can be selected (either alone or as part of a collection of selected shapes)
+* Can be deleted
+
+Connectors:
+
+* Have two end points, each of which may (optionally) be linked to a shape. If linked, then the endpoint will move when the attached shape moves.
+* May have mid points and curves
+* Can be styled via strokes.
+
+
+Things we need:
+* The ability to convert a drawn shape into a Shape object or a Connector.
+	- Detector.js or perceptron.js
+* The ability to automatically "snap" Connectors to Shapes, if the endpoint of the Connector coincides with the shape.
+	- Requires the ability to test whether a given point lies within a region.
+* The ability to select Shapes via a rectangular region
+* The ability to click on Shapes to select them
+* The ability to unlink Connectors from Shapes
+* The ability to add text to Shapes/Connectors
+* The ability to move Shapes and have their linked Connectors move with them.
