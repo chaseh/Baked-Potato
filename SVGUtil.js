@@ -7,11 +7,11 @@ var SVGUtil = {
       ellipse.setAttributeNS(null, "cx", x + w/2);
       ellipse.setAttributeNS(null, "cy", y + h/2);
       ellipse.setAttributeNS(null, "rx", w/2);
-      ellipse.setAttributeNS(null, "ry",h/2);
-      ellipse.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
+      ellipse.setAttributeNS(null, "ry", h/2);
+      ellipse.setAttributeNS(null,'fill', 'white');
+      ellipse.setAttributeNS(null,'stroke','black');
 	  ellipse.setAttributeNS(null,'stroke-width',2);
-      ellipse.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
-      ellipse.setAttributeNS(null,'fill-opacity',0);
+//	  ellipse.setAttributeNS(null,'style','filter:url(#DropShadow)'); //Doesn't work
       svg.appendChild(ellipse);   
     },
     // Line methods
@@ -22,7 +22,7 @@ var SVGUtil = {
       line.setAttributeNS(null, "y1", y1);
       line.setAttributeNS(null, "x2", x2);
       line.setAttributeNS(null, "y2", y2);
-      line.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
+      line.setAttributeNS(null,'stroke','black');
 	  line.setAttributeNS(null,'stroke-width',2);
 	  svg.appendChild(line);       
     },
@@ -34,10 +34,9 @@ var SVGUtil = {
       rect.setAttributeNS(null, "y", y);
       rect.setAttributeNS(null, "width",  w);
       rect.setAttributeNS(null, "height", h);
-      rect.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
+      rect.setAttributeNS(null,'fill', 'white');
+      rect.setAttributeNS(null,'stroke','black');
 	  rect.setAttributeNS(null,'stroke-width',2);
-      rect.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
-      rect.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(rect);     
     },
     // Triangle methods
@@ -48,10 +47,9 @@ var SVGUtil = {
       var str = "M" + x + "," + Y + " L" + X + "," + Y + " L" + .5 * (X + x) + "," + y + " L" + x + "," + Y;
       triangle.setAttributeNS(null, "d", str);
       triangle.setAttributeNS(null, "d", str);
-	  triangle.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
+      triangle.setAttributeNS(null,'fill', 'white');
+	  triangle.setAttributeNS(null,'stroke','black');
 	  triangle.setAttributeNS(null,'stroke-width',2);
-      triangle.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
-      triangle.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(triangle);
     },
     // Curve methods
@@ -64,14 +62,13 @@ var SVGUtil = {
         str = str.concat(" S", x[i].toString(), ",", y[i].toString(), ",", x[i+1].toString(), ",", y[i+1].toString());
       }
       path.setAttributeNS(null, "d", str);
-      path.setAttributeNS(null,'stroke','rgb(0, 0, 0)');
+      path.setAttributeNS(null,'stroke','black');
 	  path.setAttributeNS(null,'stroke-width', 2);
-      path.setAttributeNS(null,'fill', 'rgba(255,255,255,1)');
       path.setAttributeNS(null,'fill-opacity',0);
       svg.appendChild(path);     
     },
     // Clear canvas
-    clearCanvas: function() {
+    clear: function() {
     	var svg = document.getElementById('display'), child = svg.firstChild, tmp;
 		while(child != null) {
 		  tmp = child.nextSibling;
@@ -79,7 +76,7 @@ var SVGUtil = {
 		  child = tmp;
 		}
     },
-    removeLast: function() {
+    undo: function() {
       var svg = document.getElementById('display'), lc = svg.lastChild; 
       if(lc !== null) {
         svg.removeChild(lc);
