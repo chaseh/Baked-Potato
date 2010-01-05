@@ -61,10 +61,17 @@ FeatureFactory.prototype = {
     secondVar[1] += Math.pow(ddyddx, 2);
     
     if(ddyddx != 0) {  //push the points if they are not a part of the same line
-      this.coordsX.push(x); 
-      this.coordsY.push(y);
+      this.coordsX.push(.25 * X[0] + .5 * X[1] + .25 * X[2]); //gaussian smoothed
+      this.coordsY.push(.25 * Y[0] + .5 * Y[1] + .25 * Y[2]); //gaussian smoothed
     }
   },
+  /*
+   * function to get the actual feature and finish up any computation that is not done online. Ideally this
+   * function would contain as little work as possible as the majority of computation should be done 
+   * sequentially in the addPoint function. The general goal behind these two functions is to get as much
+   * computing power out of them without any visible slowdown to the user. The means that the
+   * combined online/offline approach is probably ideal.
+  */
   getFeature : function() {
     var len = this.length, 
         gradVar = this.gradVar, 
@@ -76,10 +83,11 @@ FeatureFactory.prototype = {
     this.avg[0] /= len; this.avg[1] /= len;
     var dist = Math.sqrt(Math.pow(this.coordsX[0] - this.X[2], 2) 
                        + Math.pow(this.coordsY[0] - this.Y[2], 2));
-    this.m = this.calcM();                   
+                       
+    this.m = this.calcM(); //O(n)
     this.theta = (180 * Math.atan(this.m) / Math.PI);
-    this.transformPoints(this.theta);
-    
+    this.transformPoints(this.theta);//O(n)
+    //Need to resample the points and determine if
     var feature = [gradVar[1] - gradVar[0], secondVar[1] - secondVar[0],
             dist, Math.max(this.avg[0]/this.avg[1], this.avg[1]/this.avg[0])]; 
     
@@ -97,15 +105,24 @@ FeatureFactory.prototype = {
       -should we regularize it?
       -is there a way to calculate it online?
       -should we use a different metric than L-2
+      -Is the model correct?
+      -Is there another way to compute this?
   */
   calcM : function() {
-    var x = this.coordsX, y = this.coordsY, a = 0, b = 0, c = 0;
-    for(var i = 0, len = y.length; i < len; i++) {
-      a += y[i] * (x[i] - this.avg[0]);
-      b += y[i] * (this.avg[1] - y[i]) + x[i] * (x[i] - this.avg[0]);
-      c += x[i] * (this.avg[1] - y[i]);
+    var coordsX = this.coordsX, coordsY = this.coordsY, 
+        a = 0, b = 0, c = 0, box = this.box, avg = [0,0];
+        scalor = Math.max(box[2] - box[0], box[3] - box[1]);
+    avg[0] = (this.avg[0] - box[0]) / scalor;
+    avg[1] = (this.avg[1] - box[1]) / scalor;
+    for(var i = 0, len = coordsY.length; i < len; i++) {
+      x = (coordsX[i] - box[0]) / scalor;
+      y = (coordsY[i] - box[1]) / scalor;
+      a += y * (x - avg[0]);
+      b += y * (avg[1] - y) + x * (x - avg[0]);
+      c += x * (avg[1] - y);
     }
     var disc = Math.pow(b, 2) - 4 * a * c;
+    alert(disc);
     return Math.min(100, disc < 0 ? 100 : (-b + Math.sqrt(disc)) / (2 * a)); //the non-degenerate solution
   },
   transformPoints : function(theta) {
