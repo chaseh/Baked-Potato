@@ -1,49 +1,49 @@
 var SVGUtil = {
     svgNS : "http://www.w3.org/2000/svg",
     // Ellipse methods
-    strokeEllipse:function(x, y, w, h) {
+    strokeEllipse:function(cx, cy, rw, rh, angle) {
       var svg = document.getElementById('display');
       var ellipse = document.createElementNS(this.svgNS,"ellipse");
-      ellipse.setAttributeNS(null, "cx", x + w/2);
-      ellipse.setAttributeNS(null, "cy", y + h/2);
-      ellipse.setAttributeNS(null, "rx", w/2);
-      ellipse.setAttributeNS(null, "ry", h/2);
+      ellipse.setAttributeNS(null, "cx", cx);
+      ellipse.setAttributeNS(null, "cy", cy);
+      ellipse.setAttributeNS(null, "rx", rw);
+      ellipse.setAttributeNS(null, "ry", rh);
       ellipse.setAttributeNS(null,'fill', 'white');
       ellipse.setAttributeNS(null,'stroke','black');
 	  ellipse.setAttributeNS(null,'stroke-width',2);
-//	  ellipse.setAttributeNS(null,'style','filter:url(#DropShadow)'); //Doesn't work
+	  ellipse.setAttributeNS(null,'transform', 'rotate(' + angle + ',' + cx + ',' + cy + ')');
       svg.appendChild(ellipse);   
     },
     // Line methods
-    strokeLine:function(x1, y1, x2, y2) {
+    strokeLine:function(x1, y1, x2, y2, color) {
       var svg = document.getElementById('display');
       var line = document.createElementNS(this.svgNS,"line");
       line.setAttributeNS(null, "x1", x1);
       line.setAttributeNS(null, "y1", y1);
       line.setAttributeNS(null, "x2", x2);
       line.setAttributeNS(null, "y2", y2);
-      line.setAttributeNS(null,'stroke','black');
+      line.setAttributeNS(null,'stroke',color === null ? 'black' : color);
 	  line.setAttributeNS(null,'stroke-width',2);
 	  svg.appendChild(line);       
     },
     // Rect methods
-    strokeRect:function(x, y, w, h) {
+    strokeRect:function(cx, cy, rw, rh, angle) {
       var svg = document.getElementById('display');
       var rect = document.createElementNS(this.svgNS,"rect");
-      rect.setAttributeNS(null, "x", x);
-      rect.setAttributeNS(null, "y", y);
-      rect.setAttributeNS(null, "width",  w);
-      rect.setAttributeNS(null, "height", h);
+      rect.setAttributeNS(null, "x", cx - rw);
+      rect.setAttributeNS(null, "y", cy - rh);
+      rect.setAttributeNS(null, "width",  2 * rw);
+      rect.setAttributeNS(null, "height", 2 * rh);
       rect.setAttributeNS(null,'fill', 'white');
       rect.setAttributeNS(null,'stroke','black');
 	  rect.setAttributeNS(null,'stroke-width',2);
+	  rect.setAttributeNS(null,'transform', 'rotate(' + angle + ',' + cx + ',' + cy + ')');
       svg.appendChild(rect);     
     },
     // Triangle methods
-    strokeTriangle: function(x, y, X, Y) {
+    strokeTriangle: function(x, y, X, Y, angle) {
       var svg = document.getElementById('display');
       var triangle = document.createElementNS(this.svgNS,"path");
-      
       var str = "M" + x + "," + Y + " L" + X + "," + Y + " L" + .5 * (X + x) + "," + y + " L" + x + "," + Y;
       triangle.setAttributeNS(null, "d", str);
       triangle.setAttributeNS(null, "d", str);
@@ -80,6 +80,10 @@ var SVGUtil = {
       var svg = document.getElementById('display'), lc = svg.lastChild; 
       if(lc !== null) {
         svg.removeChild(lc);
-      }
+        lc = svg.lastChild;
+        if(lc !== null) {
+          svg.removeChild(lc);
+        }
+      } 
     }
 };

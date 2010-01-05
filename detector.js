@@ -28,25 +28,29 @@
   };
   
   var draw = function() {
+    var m = example.m, box = example.box, tBox = example.transformedBox, avg = example.avg;
     switch(label) {
       case 0:
-        SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.X[2], example.Y[2]);
+        SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.X[2], example.Y[2], null);
+        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
         break;
       case 1: //need rotated ellipses
-        var t = example.box[0], l = example.box[1],
-            w = example.box[2] - t, h = example.box[3] - l;
-        SVGUtil.strokeEllipse(t, l, w, h);
+        var w = tBox[2] - tBox[0], h = tBox[3] - tBox[1];
+        SVGUtil.strokeEllipse(avg[0], avg[1], w/2, h/2, example.theta);
+        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
         break;
       case 2: //need rotated/skew rectangles e.g. parallelograms
-        var t = example.box[0], l = example.box[1],
-            w = example.box[2] - t, h = example.box[3] - l;
-        SVGUtil.strokeRect(t, l, w, h);
+        var w = tBox[2] - tBox[0], h = tBox[3] - tBox[1];
+        SVGUtil.strokeRect(avg[0], avg[1], w/2, h/2, example.theta);
+        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
         break;
       case 3: //assumes equilateral triangle. This needs to be improved--need rotated shapes
-        SVGUtil.strokeTriangle(example.box[0], example.box[1], example.box[2], example.box[3]);
+        SVGUtil.strokeTriangle(box[0], box[1], box[2], box[3], example.theta);
+        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
         break;
       case 4: //unrecognizable
         SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); //try to smooth the unrecognizable gesture
+        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
         break;
     }
   };
