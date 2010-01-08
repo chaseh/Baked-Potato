@@ -1,6 +1,6 @@
 (function() { //private scope so this code can `play-nice' with other packages
   var canvas = null, ctx = null, 
-      predictor = new Perceptron(5, 4),
+      predictor = new Perceptron(5, 206),
       example = new FeatureFactory(), label = null;
   window.onload = function() {
     canvas = document.getElementById("canvas");
@@ -28,29 +28,29 @@
   };
   
   var draw = function() {
-    var m = example.m, box = example.box, tBox = example.transformedBox, avg = example.avg;
+    var box = example.box, avg = example.avg;
     switch(label) {
       case 0:
         SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.X[2], example.Y[2], null);
-        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
         break;
       case 1: //need rotated ellipses
-        var w = tBox[2] - tBox[0], h = tBox[3] - tBox[1];
-        SVGUtil.strokeEllipse(avg[0], avg[1], w/2, h/2, example.theta);
-        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
+        var w = box[2] - box[0], h = box[3] - box[1];
+        SVGUtil.strokeEllipse(avg[0], avg[1], w/2, h/2, 0, null);
         break;
       case 2: //need rotated/skew rectangles e.g. parallelograms
-        var w = tBox[2] - tBox[0], h = tBox[3] - tBox[1];
-        SVGUtil.strokeRect(avg[0], avg[1], w/2, h/2, example.theta);
-        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
+        var w = box[2] - box[0], h = box[3] - box[1];
+        SVGUtil.strokeRect(avg[0], avg[1], w/2, h/2, 0);
         break;
       case 3: //assumes equilateral triangle. This needs to be improved--need rotated shapes
-        SVGUtil.strokeTriangle(box[0], box[1], box[2], box[3], example.theta);
-        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
+        SVGUtil.strokeTriangle(box[0], box[1], box[2], box[3], 0);
         break;
       case 4: //unrecognizable
-        SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); //try to smooth the unrecognizable gesture
-        SVGUtil.strokeLine(avg[0] - 100, avg[1] - 100 * m, avg[0] + 100, avg[1] + 100 * m, 'red');
+        for(var i = 0, len = example.coordsX.length; i < len; i++) {
+          SVGUtil.strokeEllipse(example.coordsX[i], example.coordsY[i], 3, 3, 0, 'red');
+        }
+        SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); 
+        SVGUtil.strokeEllipse(avg[0], avg[1], 3, 3, 0, null);
+//        SVGUtil.strokeLine(m * (avg[0] - 100) + b, avg[1] - 100, m * (avg[0] + 100) + b, avg[1] + 100, 'red');
         break;
     }
   };

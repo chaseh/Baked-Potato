@@ -1,7 +1,7 @@
 var SVGUtil = {
     svgNS : "http://www.w3.org/2000/svg",
     // Ellipse methods
-    strokeEllipse:function(cx, cy, rw, rh, angle) {
+    strokeEllipse:function(cx, cy, rw, rh, angle, color) {
       var svg = document.getElementById('display');
       var ellipse = document.createElementNS(this.svgNS,"ellipse");
       ellipse.setAttributeNS(null, "cx", cx);
@@ -12,6 +12,7 @@ var SVGUtil = {
       ellipse.setAttributeNS(null,'stroke','black');
 	  ellipse.setAttributeNS(null,'stroke-width',2);
 	  ellipse.setAttributeNS(null,'transform', 'rotate(' + angle + ',' + cx + ',' + cy + ')');
+      ellipse.setAttributeNS(null,'stroke',color === null ? 'black' : color);
       svg.appendChild(ellipse);   
     },
     // Line methods
@@ -58,8 +59,11 @@ var SVGUtil = {
       var path = document.createElementNS(this.svgNS,"path");
         
       var str = "M" + x[0] + "," + y[0];
-      for(var i = 1, len = x.length; i < len - 1; i = i + 2) {
+      for(var i = 1, len = x.length - 1; i < len; i = i + 2) {
         str = str.concat(" S", x[i].toString(), ",", y[i].toString(), ",", x[i+1].toString(), ",", y[i+1].toString());
+      }
+      if(i < x.length) {
+        str = str.concat(" L", x[i].toString(), ",", y[i].toString()); 
       }
       path.setAttributeNS(null, "d", str);
       path.setAttributeNS(null,'stroke','black');
@@ -80,10 +84,6 @@ var SVGUtil = {
       var svg = document.getElementById('display'), lc = svg.lastChild; 
       if(lc !== null) {
         svg.removeChild(lc);
-        lc = svg.lastChild;
-        if(lc !== null) {
-          svg.removeChild(lc);
-        }
       } 
     }
 };
