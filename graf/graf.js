@@ -4,13 +4,19 @@
 
 goog.provide("graf.App");
 
-goog.require("goog.graphics")
+goog.require("goog.graphics");
+goog.require("goog.Timer");
+goog.require("goog.events");
+
 
 graf.App = function() {
 	this.graphics = goog.graphics.createGraphics(400,400);
 	this.graphics.render(document.getElementById("surface"));
 	this.circles = [];
 	this.addCircle();
+	this.timer = new goog.Timer(10);
+	this.timer.start();
+	goog.events.listen(this.timer, goog.Timer.TICK, this.addCircle, false, this);
 }
 
 graf.App.prototype.addCircle = function() {
