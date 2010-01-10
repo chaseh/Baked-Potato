@@ -11,5 +11,7 @@ graf.App = function() {
 	var blackFill = new goog.graphics.SolidFill("#000");
 	var redStroke = new goog.graphics.Stroke(1, "#F00");
 	this.circle = this.graphics.drawEllipse(100,200, 10, 20, redStroke, blackFill);
+	this.originalCircle = this.graphics.drawEllipse(100, 200, 10, 20, redStroke, blackFill);
+	this.circle.setTransformation(0,0,100,100,200);
 	this.graphics.render(document.getElementById("surface"));
 }
