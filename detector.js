@@ -1,8 +1,7 @@
 (function() { //private scope so this code can `play-nice' with other packages
   var canvas = null, ctx = null, 
-      predictor = new Perceptron(5, 5),
+      predictor = new Perceptron(5, 206),
       example = new FeatureFactory(), label = null;
-      
   window.onload = function() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext('2d');
@@ -15,43 +14,47 @@
       child.data = "Sorry!";
       setTimeout(function() {child.data = "Wrong?";}, 250);
       label = parseInt(document.getElementById("errorbox").value);
-      SVGUtil.removeLast();
-      drawLast();  
+      SVGUtil.undo();
+      draw();  
     };
   
     document.getElementById('undo').onclick = function() {
-      SVGUtil.removeLast();
+      SVGUtil.undo();
     };
 
     document.getElementById('clear').onclick = function() {
-      SVGUtil.clearCanvas();
+      SVGUtil.clear();
     };
   };
   
-  var drawLast = function() {
+  var draw = function() {
+    var box = example.box, avg = example.avg;
     switch(label) {
       case 0:
-        SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.curX, example.curY);
+        SVGUtil.strokeLine(example.coordsX[0], example.coordsY[0], example.X[2], example.Y[2], null);
         break;
-      case 1:
-        var t = example.minX, l = example.minY,
-            w = example.maxX - t, h = example.maxY - l;
-        SVGUtil.strokeEllipse(t, l, w, h);
+      case 1: //need rotated ellipses
+        var w = box[2] - box[0], h = box[3] - box[1];
+        SVGUtil.strokeEllipse(avg[0], avg[1], w/2, h/2, 0, null);
         break;
-      case 2: //need rotated rectangles e.g. diamonds
-        var t = example.minX, l = example.minY,
-            w = example.maxX - t, h = example.maxY - l;
-        SVGUtil.strokeRect(t, l, w, h);
+      case 2: //need rotated/skew rectangles e.g. parallelograms
+        var w = box[2] - box[0], h = box[3] - box[1];
+        SVGUtil.strokeRect(avg[0], avg[1], w/2, h/2, 0);
         break;
-      case 3: //assumes upwards equilateral triangle. This needs to be improved. Need rotated shapes
-        SVGUtil.strokeTriangle(example.minX, example.minY, example.maxX, example.maxY);
+      case 3: //assumes equilateral triangle. This needs to be improved--need rotated shapes
+        SVGUtil.strokeTriangle(box[0], box[1], box[2], box[3], 0);
         break;
       case 4: //unrecognizable
-        SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); //try to smooth the unrecognizable gesture
+        for(var i = 0, len = example.coordsX.length; i < len; i++) {
+          SVGUtil.strokeEllipse(example.coordsX[i], example.coordsY[i], 3, 3, 0, 'red');
+        }
+        SVGUtil.strokeSmoothCurve(example.coordsX, example.coordsY); 
+        SVGUtil.strokeEllipse(avg[0], avg[1], 3, 3, 0, null);
+//        SVGUtil.strokeLine(m * (avg[0] - 100) + b, avg[1] - 100, m * (avg[0] + 100) + b, avg[1] + 100, 'red');
         break;
     }
   };
- 
+  
   DragDrop.enable();
   
   var draggerStart = function(event) {
@@ -80,7 +83,7 @@
     ctx.lineTo(x, y);
     label = predictor.predict(example.getFeature());
     ctx.clearRect(0,0, canvas.width, canvas.height); //clear canvas
-    drawLast();
+    draw();
   };
    
   DragDrop.addHandler("dragstart", draggerStart);
