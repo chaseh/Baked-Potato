@@ -6,11 +6,13 @@
 		<script src='shape.js'></script>
 		<script src='graf.js'></script>
 		<script>
-			goog.require("graf.App");
-			var app = new graf.App();
+			window.onload = function() {
+				var app = new graf.App();
+			}
 		</script>
 	</head>
 	<body>
-		Graf application will go here.
+		<div id='surface'>
+		</div>
 	</body>
 </html>
