@@ -15,9 +15,20 @@ graf.App = function() {
 	this.graphics.render(document.getElementById("surface"));
 	this.circles = [];
 	this.addCircle();
-	this.timer = new goog.Timer(10);
+	this.timer = new goog.Timer(100);
 	this.timer.start();
-	goog.events.listen(this.timer, goog.Timer.TICK, this.addCircle, false, this);
+	goog.events.listen(this.timer, goog.Timer.TICK, this.decay, false, this);
+}
+
+graf.App.prototype.decay = function() {
+	//do nothing for now.
+	var len = this.circles.length;
+	var circle;
+	for(var i = 0; i < len; i++) {
+		circle = this.circles[i];
+		if (circle.getWidth() <= 0) continue;
+		circle.setSize(circle.getWidth() - 1, circle.getHeight() - 1);
+	}
 }
 
 graf.App.prototype.addCircle = function() {
