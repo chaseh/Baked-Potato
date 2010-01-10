@@ -2,8 +2,11 @@
 	<head>
 		<title>Graf</title>
 		<script src='../closure/closure/goog/base.js'></script>
-		<script src='surface.js'></script>
-		<script src='shape.js'></script>
+		<script src='graf.js'></script>
+		<script>
+			goog.require("graf.App");
+			var app = new graf.App();
+		</script>
 	</head>
 	<body>
 		Graf application will go here.
