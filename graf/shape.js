@@ -3,6 +3,6 @@
  */
  
 function Shape(app, surface) {
-  this.app = app;
-  this.surface = surface;
+	this.app = app;
+	this.surface = surface;
 }
