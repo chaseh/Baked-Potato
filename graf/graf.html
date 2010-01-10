@@ -7,12 +7,14 @@
 		<script src='graf.js'></script>
 		<script>
 			window.onload = function() {
-				var app = new graf.App();
+				graf.app = new graf.App();
 			}
 		</script>
 	</head>
 	<body>
 		<div id='surface'>
 		</div>
+		<input type='button' onclick='graf.app.addCircle()' value='Add circle'>
+		
 	</body>
 </html>
