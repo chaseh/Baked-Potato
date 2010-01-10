@@ -2,7 +2,9 @@
  * Author: Alex Komoroske (jkomoros@gmail.com)
  */
 
+goog.provide("graf.Surface");
 
-function Surface(app) {
+graf.Surface = function (app) {
 	this.app = app;
+	alert("Surface created");
 }

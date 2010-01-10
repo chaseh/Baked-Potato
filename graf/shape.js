@@ -2,7 +2,10 @@
  * Author: Alex Komoroske (jkomoros@gmail.com)
  */
  
-function Shape(app, surface) {
+
+goog.provide("graf.Shape");
+
+graf.Shape = function (app, surface) {
 	this.app = app;
 	this.surface = surface;
 }

@@ -2,9 +2,10 @@
  * Author: Alex Komoroske (jkomoros@gmail.com)
  */
 
-goog.provide("graf");
 goog.provide("graf.App");
 
+goog.require("graf.Surface");
+
 graf.App = function() {
-	alert("Graf application created");
+	this.surface = graf.Surface(this);
 }
