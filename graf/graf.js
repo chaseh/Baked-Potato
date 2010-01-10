@@ -4,13 +4,14 @@
 
 goog.provide("graf.App");
 
-goog.require("goog.graphics");
+goog.require("goog.graphics.ext");
 goog.require("goog.Timer");
 goog.require("goog.events");
 
 
 graf.App = function() {
-	this.graphics = goog.graphics.createGraphics(400,400);
+	this.graphics = new goog.graphics.ext.Graphics(400, 400);
+	this.graphicsGroup = new goog.graphics.ext.Group(this.graphics);
 	this.graphics.render(document.getElementById("surface"));
 	this.circles = [];
 	this.addCircle();
@@ -20,6 +21,13 @@ graf.App = function() {
 }
 
 graf.App.prototype.addCircle = function() {
-	var circle = this.graphics.drawEllipse(Math.random() * this.graphics.getSize().width, Math.random() * this.graphics.getSize().height, 30, 30, new goog.graphics.Stroke(1, "#F00"), new goog.graphics.SolidFill("#000"));
+	
+	var circle = new goog.graphics.ext.Ellipse(this.graphicsGroup);
+	circle.setLeft(Math.random() * this.graphics.getWidth());
+	circle.setTop(Math.random() * this.graphics.getHeight());
+	circle.setHeight(30);
+	circle.setWidth(30);
+	circle.setFill(new goog.graphics.SolidFill("#000"));
+	circle.setStroke(new goog.graphics.Stroke(1, "#F00"));
 	this.circles.push(circle);	
 }
