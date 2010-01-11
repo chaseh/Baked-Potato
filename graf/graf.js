@@ -41,5 +41,8 @@ graf.App.prototype.addCircle = function() {
 	circle.setWidth(Math.random() * 50);
 	circle.setFill(new goog.graphics.SolidFill("#000"));
 	circle.setStroke(new goog.graphics.Stroke(1, "#F00"));
+	//TODO: this uses circle.getWrapper, but getWrapper is technically supposed to be protected.
+	//unfortunately, events can't be successfully registered on the circle itself for some reason.
+	goog.events.listen(circle.getWrapper(), goog.events.EventType.MOUSEOVER, function() {circle.setFill(new goog.graphics.SolidFill("#FF0"))});
 	this.circles.push(circle);	
 }
