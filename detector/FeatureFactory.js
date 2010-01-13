@@ -1,3 +1,8 @@
+/*
+ * Author: Chase Hensel (chase.hensel@gmail.com)
+ */
+
+
 function FeatureFactory() {
   this.avg;
   this.gradVar;

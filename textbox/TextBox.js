@@ -1,3 +1,7 @@
+/*
+ * Author: Chase Hensel (chase.hensel@gmail.com)
+ */
+
 function min(val1, val2) {
 	return val2 > -1 ? (val1 > val2 ? val2 : val1) : val1;
 }

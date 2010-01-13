@@ -1,3 +1,7 @@
+/*
+ * Author: Chase Hensel (chase.hensel@gmail.com)
+ */
+
 var DragDrop = function() {
   var dragdrop = new EventTarget(),
 	dragging = null, timeout = null,

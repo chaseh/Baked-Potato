@@ -1,3 +1,7 @@
+/*
+ * Author: Chase Hensel (chase.hensel@gmail.com)
+ */
+
 var MathUtil = {
   MAX_VALUE : 100000,
   MIN_VALUE : 0,
