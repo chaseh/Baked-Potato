@@ -1,0 +1,20 @@
+<html>
+	<head>
+		<title>Graf</title>
+		<script src='../closure/closure/goog/base.js'></script>
+		<script src='surface.js'></script>
+		<script src='shape.js'></script>
+		<script src='graf.js'></script>
+		<script>
+			window.onload = function() {
+				graf.app = new graf.App();
+			}
+		</script>
+	</head>
+	<body>
+		<div id='surface'>
+		</div>
+		<input type='button' onclick='graf.app.addCircle()' value='Add circle'>
+		
+	</body>
+</html>
