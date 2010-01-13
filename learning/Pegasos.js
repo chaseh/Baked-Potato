@@ -1,7 +1,3 @@
-/*
- * Author: Chase Hensel (chase.hensel@gmail.com)
- */
-
 function Pegasos(k, d) {
   this.t = 1;
   this.learners = new Array(k); //a double array containing the 

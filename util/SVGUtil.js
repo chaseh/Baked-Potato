@@ -1,7 +1,3 @@
-/*
- * Author: Chase Hensel (chase.hensel@gmail.com)
- */
-
 var SVGUtil = {
     svgNS : "http://www.w3.org/2000/svg",
     // Ellipse methods

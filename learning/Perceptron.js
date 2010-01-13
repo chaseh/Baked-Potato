@@ -1,7 +1,3 @@
-/*
- * Author: Chase Hensel (chase.hensel@gmail.com)
- */
-
 function Perceptron(k, d) {
   this.learners = new Array(k); //a double array containing the 
   for(var i = 0, j; i < k; i++) {

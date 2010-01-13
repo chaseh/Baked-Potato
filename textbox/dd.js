@@ -1,7 +1,3 @@
-/*
- * Author: Chase Hensel (chase.hensel@gmail.com)
- */
-
 (function() { //private scope so this code can `play-nice' with other packages
 	var focused = null, textBoxes = new Array(),
 		coordsX, coordsY,
