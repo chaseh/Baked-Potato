@@ -1,0 +1,47 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+    <title>Baked-Potato</title>
+    <script type="text/javascript" src="../util/SVGUtil.js"></script>
+    <script type="text/javascript" src="../events/EventUtil.js"></script>
+    <script type="text/javascript" src="../events/EventTarget.js"></script>
+    <script type="text/javascript" src="../events/DragDrop.js"></script>
+    <script type="text/javascript" src="../learning/Pegasos.js"></script>
+    <script type="text/javascript" src="FeatureFactory.js"></script>
+    <script type="text/javascript" src="detector.js"></script>
+    <link rel="stylesheet" type="text/css" href="detector.css" />
+</head>
+<body>
+<svg:svg id='display' width="600" height="500">
+<defs>
+    <filter id="DropShadow" filterUnits="userSpaceOnUse">
+	  <desc>
+        This filter takes the SourceGraphic, shifts it down and to the right 3 units, blurs it,
+        and then renders the SourceGraphic on top of the shifted/blurred SourceGraphic.
+      </desc>
+       <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+       <feOffset in="blur" dx="4" dy="4" result="offsetBlurredAlpha"/>
+       <feMerge>
+           <feMergeNode in="offsetBlurredAlpha"/>
+           <feMergeNode in="SourceGraphic"/>
+       </feMerge>
+    </filter>
+</defs>
+</svg:svg>
+<canvas class="draggable" id="canvas" width="600" height="500"></canvas>
+<select class="errorbox" id = "errorbox">
+  <option value="0">Line</option>
+  <option value="1">Circle</option>
+  <option value="2">Square</option>
+  <option value="3">Triangle</option>
+  <option value="4">Unknown</option>
+</select>
+<div class="error" id="error">Wrong?</div>
+<div class="clear" id="clear">Clear the canvas?</div>
+<div class="undo" id="undo">Undo</div>
+<h3 class="notes">
+Draw a shape! If the computer guesses incorrectly, <br />
+then select the correct shape from the drop down menu <br />
+and click `Wrong?'.</h3>
+</body>
+</html>
