@@ -85,11 +85,11 @@ FeatureFactory.prototype = {
     var coordsX = this.coordsX, coordsY = this.coordsY, distBetweenPoints = this.distBetweenPoints,
         endDist = this.l2Dist(coordsX[0], this.X[2], coordsY[0], this.Y[2]), totalDistance = this.totalDistance;
     //resample, pivot (around the left, top most point), and guassian smooth points
-    var pair = this.resample(coordsX, coordsY, totalDistance, distBetweenPoints, 52); //O(n + 104)
-    pair = this.pivot(pair[0], pair[1]); //O(104)
-    coordsX = this.smooth(pair[0]); //O(52) drops first and last point
+    var pair = this.resample(coordsX, coordsY, totalDistance, distBetweenPoints, 54); //O(n + 108)
+    //pair = this.pivot(pair[0], pair[1]); //O(108)
+    coordsX = this.smooth(pair[0]); //O(54) drops first two and last two points
     this.coordsX = coordsX;
-    coordsY = this.smooth(pair[1]); //O(52) drops first and last point    
+    coordsY = this.smooth(pair[1]); //O(54) drops first two and last two points    
     this.coordsY = coordsY;
     
     //scale points to be between (0,1)
@@ -107,12 +107,12 @@ FeatureFactory.prototype = {
     var trip = this.angles(coordsX, coordsY, avg); //O(100);
     var sin = trip[0], cos = trip[1];
     //trip[2] is the total angle -- heuristic to determine if the shape is clockwize or not
-    if(trip[2] < 0) {
+/*    if(trip[2] < 0) {
       scaledX.reverse();
       scaledY.reverse();
       sin.reverse();
       cos.reverse();
-    }
+    }*/
     
     //offline features
     var offline = this.offline(scaledX, scaledY, 20, 20); //O(400);
@@ -179,8 +179,8 @@ FeatureFactory.prototype = {
   },
   smooth : function(list) {//gaussian smoothing of the points
     var ans = [];
-    for(var i = 1, len = list.length - 1; i < len; i++) {
-      ans.push(.25 * list[i - 1] + .5 * list[i] + .25 * list[i + 1]);
+    for(var i = 2, len = list.length - 2; i < len; i++) {
+      ans.push(.1 * list[i - 2] + .2 * list[i - 1] + .4 * list[i] + .2 * list[i + 1] + .1 * list[i + 2]);
     }
     return ans;
   },
